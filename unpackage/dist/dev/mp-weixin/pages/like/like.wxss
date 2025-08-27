@@ -1,0 +1,343 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.work-report-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20rpx;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding: 20rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+.page-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+.new-report-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 25rpx;
+  padding: 16rpx 32rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.report-list-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+.title-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+.report-count {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 10rpx;
+}
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+.report-item {
+  background-color: #fafafa;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  border-left: 6rpx solid #667eea;
+  transition: all 0.3s ease;
+}
+.report-item:active {
+  transform: scale(0.98);
+  background-color: #f0f0f0;
+}
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.report-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+.report-status {
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+.report-status.status-draft {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+.report-status.status-pending {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+.report-status.status-approved {
+  background-color: #e8f5e8;
+  color: #388e3c;
+}
+.report-status.status-rejected {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+.report-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+.report-date, .report-author {
+  font-size: 24rpx;
+  color: #666;
+}
+.report-summary {
+  margin-bottom: 20rpx;
+}
+.summary-text {
+  font-size: 26rpx;
+  color: #555;
+  line-height: 1.5;
+}
+.report-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.leader-comment {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.comment-label {
+  font-size: 22rpx;
+  color: #999;
+  margin-right: 10rpx;
+}
+.comment-text {
+  font-size: 22rpx;
+  color: #666;
+  flex: 1;
+}
+.view-detail {
+  text-align: right;
+}
+.detail-text {
+  font-size: 22rpx;
+  color: #667eea;
+}
+.empty-state {
+  text-align: center;
+  padding: 80rpx 20rpx;
+}
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 16rpx;
+}
+.empty-tip {
+  font-size: 24rpx;
+  color: #ccc;
+}
+
+/* 弹窗样式 */
+.report-modal, .detail-modal {
+  background-color: #fff;
+  border-radius: 20rpx;
+  width: 90vw;
+  max-width: 600rpx;
+  max-height: 80vh;
+  overflow: hidden;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+.close-btn {
+  font-size: 40rpx;
+  color: #999;
+  background: none;
+  border: none;
+  padding: 0;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-body {
+  padding: 30rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.form-group {
+  margin-bottom: 24rpx;
+  position: relative;
+}
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+.form-input, .form-textarea {
+  width: 100%;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fafafa;
+}
+.form-input:focus, .form-textarea:focus {
+  border-color: #667eea;
+  background-color: #fff;
+}
+.form-textarea {
+  min-height: 120rpx;
+  resize: none;
+}
+.char-count {
+  position: absolute;
+  right: 16rpx;
+  bottom: 16rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+.button-group {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+.cancel-btn, .save-btn {
+  flex: 1;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+}
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}
+.save-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+.save-btn:disabled {
+  background: #ccc;
+  opacity: 0.6;
+}
+
+/* 详情弹窗样式 */
+.detail-section {
+  margin-bottom: 24rpx;
+}
+.detail-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+.detail-content {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+}
+.detail-content.content-text {
+  background-color: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  white-space: pre-wrap;
+}
+.leader-comment-box {
+  background-color: #fff3e0;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #ff9800;
+}
+.comment-text {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+  display: block;
+  margin-bottom: 12rpx;
+}
+.comment-time {
+  font-size: 22rpx;
+  color: #999;
+}
+.detail-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+.edit-btn, .close-detail-btn {
+  flex: 1;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+}
+.edit-btn {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: #fff;
+}
+.close-detail-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}

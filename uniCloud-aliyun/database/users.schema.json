@@ -1,0 +1,124 @@
+{
+	"bsonType": "object",
+	"required": ["userId"],
+	"permission": {
+		"read": "auth.uid != null",
+		"create": "auth.uid != null",
+		"update": "auth.uid != null",
+		"delete": "auth.uid != null"
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"userId": {
+			"bsonType": "string",
+			"description": "统一用户ID",
+			"title": "统一用户ID"
+		},
+		"openid": {
+			"bsonType": "string",
+			"description": "微信openid",
+			"title": "微信openid"
+		},
+		"session_key": {
+			"bsonType": "string",
+			"description": "微信session_key",
+			"title": "微信session_key"
+		},
+		"username": {
+			"bsonType": "string",
+			"description": "用户名",
+			"title": "用户名"
+		},
+		"password": {
+			"bsonType": "string",
+			"description": "密码",
+			"title": "密码"
+		},
+		"phone": {
+			"bsonType": "string",
+			"description": "手机号",
+			"title": "手机号"
+		},
+		"email": {
+			"bsonType": "string",
+			"description": "邮箱",
+			"title": "邮箱"
+		},
+		"nickName": {
+			"bsonType": "string",
+			"description": "微信昵称",
+			"title": "微信昵称"
+		},
+		"avatarUrl": {
+			"bsonType": "string",
+			"description": "微信头像",
+			"title": "微信头像"
+		},
+		"gender": {
+			"bsonType": "int",
+			"description": "性别：0 未知 1 男 2 女",
+			"title": "性别",
+			"minimum": 0,
+			"maximum": 2
+		},
+		"country": {
+			"bsonType": "string",
+			"description": "国家",
+			"title": "国家"
+		},
+		"province": {
+			"bsonType": "string",
+			"description": "省份",
+			"title": "省份"
+		},
+		"city": {
+			"bsonType": "string",
+			"description": "城市",
+			"title": "城市"
+		},
+		"language": {
+			"bsonType": "string",
+			"description": "语言",
+			"title": "语言"
+		},
+		"loginType": {
+			"bsonType": "string",
+			"description": "登录方式",
+			"title": "登录方式"
+		},
+		"platform": {
+			"bsonType": "string",
+			"description": "平台标识",
+			"title": "平台标识"
+		},
+		"deviceId": {
+			"bsonType": "string",
+			"description": "设备ID",
+			"title": "设备ID"
+		},
+		"status": {
+			"bsonType": "int",
+			"description": "状态：0 禁用 1 启用",
+			"title": "状态",
+			"minimum": 0,
+			"maximum": 1
+		},
+		"lastLoginTime": {
+			"bsonType": "timestamp",
+			"description": "最后登录时间",
+			"title": "最后登录时间"
+		},
+		"createTime": {
+			"bsonType": "timestamp",
+			"description": "创建时间",
+			"title": "创建时间"
+		},
+		"updateTime": {
+			"bsonType": "timestamp",
+			"description": "更新时间",
+			"title": "更新时间"
+		}
+	}
+}

@@ -1,0 +1,40 @@
+{
+	"bsonType": "object",
+	"required": ["phone", "code"],
+	"permission": {
+		"read": "auth.uid != null",
+		"create": "auth.uid != null",
+		"update": "auth.uid != null",
+		"delete": "auth.uid != null"
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"phone": {
+			"bsonType": "string",
+			"description": "手机号",
+			"title": "手机号"
+		},
+		"code": {
+			"bsonType": "string",
+			"description": "验证码",
+			"title": "验证码"
+		},
+		"used": {
+			"bsonType": "bool",
+			"description": "是否已使用",
+			"title": "是否已使用"
+		},
+		"createTime": {
+			"bsonType": "timestamp",
+			"description": "创建时间",
+			"title": "创建时间"
+		},
+		"expireTime": {
+			"bsonType": "timestamp",
+			"description": "过期时间",
+			"title": "过期时间"
+		}
+	}
+}

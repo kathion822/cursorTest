@@ -1,0 +1,203 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.profile-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+.profile-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 30rpx;
+  text-align: center;
+}
+.profile-header .profile-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+}
+.user-info-section {
+  background: white;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+.user-info-section .avatar-section {
+  padding: 40rpx;
+  text-align: center;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.user-info-section .avatar-section .avatar-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20rpx;
+}
+.user-info-section .avatar-section .avatar-container .avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 4rpx solid rgba(102, 126, 234, 0.3);
+}
+.user-info-section .avatar-section .avatar-container .avatar-edit-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+  background: #667eea;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  color: white;
+}
+.user-info-section .avatar-section .avatar-tip {
+  font-size: 24rpx;
+  color: #999;
+}
+.user-info-section .info-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.user-info-section .info-item:last-child {
+  border-bottom: none;
+}
+.user-info-section .info-item:active {
+  background-color: #f8f8f8;
+}
+.user-info-section .info-item .info-label {
+  width: 200rpx;
+}
+.user-info-section .info-item .info-label .label-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+.user-info-section .info-item .info-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.user-info-section .info-item .info-content .content-text {
+  font-size: 28rpx;
+  color: #666;
+}
+.user-info-section .info-item .info-content .edit-icon {
+  font-size: 24rpx;
+  color: #999;
+}
+.logout-section {
+  margin: 40rpx 20rpx;
+}
+.logout-section .logout-btn {
+  width: 100%;
+  height: 80rpx;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+}
+.edit-modal {
+  background: white;
+  border-radius: 20rpx;
+  width: 600rpx;
+}
+.edit-modal .modal-header {
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.edit-modal .modal-header .modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+.edit-modal .modal-header .close-btn {
+  font-size: 40rpx;
+  color: #999;
+  line-height: 1;
+}
+.edit-modal .modal-body {
+  padding: 30rpx;
+}
+.edit-modal .modal-body .input-group {
+  margin-bottom: 30rpx;
+}
+.edit-modal .modal-body .input-group.sms-group {
+  display: flex;
+  gap: 20rpx;
+}
+.edit-modal .modal-body .input-group.sms-group .sms-input {
+  flex: 1;
+}
+.edit-modal .modal-body .input-group.sms-group .send-sms-btn {
+  width: 200rpx;
+  height: 80rpx;
+  background: #2867ce;
+  color: white;
+  border: none;
+  border-radius: 10rpx;
+  font-size: 24rpx;
+}
+.edit-modal .modal-body .input-group.sms-group .send-sms-btn:disabled {
+  background: #ccc;
+}
+.edit-modal .modal-body .input-group .input-field {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+.edit-modal .modal-body .input-group .input-field:focus {
+  border-color: #2867ce;
+}
+.edit-modal .modal-body .button-group {
+  display: flex;
+  gap: 20rpx;
+}
+.edit-modal .modal-body .button-group .cancel-btn, .edit-modal .modal-body .button-group .confirm-btn {
+  flex: 1;
+  height: 80rpx;
+  border: none;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+}
+.edit-modal .modal-body .button-group .cancel-btn {
+  background: #f0f0f0;
+  color: #666;
+}
+.edit-modal .modal-body .button-group .confirm-btn {
+  background: #2867ce;
+  color: white;
+}

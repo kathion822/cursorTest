@@ -1,0 +1,11 @@
+{
+	"name": "quick-login",
+	"version": "1.0.0",
+	"description": "一键登录云函数",
+	"main": "index.js",
+	"dependencies": {},
+	"cloudfunction-config": {
+		"triggers": [],
+		"path": "/quick-login"
+	}
+}

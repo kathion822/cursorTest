@@ -1,0 +1,11 @@
+{
+	"name": "save-user-info",
+	"version": "1.0.0",
+	"description": "保存用户信息云函数",
+	"main": "index.js",
+	"dependencies": {},
+	"cloudfunction-config": {
+		"triggers": [],
+		"path": "/save-user-info"
+	}
+}
