@@ -33,13 +33,10 @@
 					
 					<view class="form-group">
 						<text class="form-label">报告日期</text>
-						<input 
-							class="form-input" 
-							:value="reportForm.date || ''"
-							placeholder="请选择日期"
-							readonly
-							@click="showDatePicker"
-						/>
+						<view class="form-input date-display" @click="showDatePicker">
+							<text v-if="reportForm.date" class="date-text">{{ reportForm.date }}</text>
+							<text v-else class="date-placeholder">请选择日期</text>
+						</view>
 						<text class="form-tip">只能选择当天及之前的日期</text>
 						<!-- 调试信息 -->
 						<text class="debug-info">当前日期值: {{ reportForm.date || '空' }}</text>
@@ -1526,6 +1523,23 @@ export default {
 	color: #ff6b6b;
 	margin-top: 4rpx;
 	display: block;
+}
+
+.date-display {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	min-height: 80rpx;
+}
+
+.date-text {
+	color: #333;
+	font-size: 28rpx;
+}
+
+.date-placeholder {
+	color: #999;
+	font-size: 28rpx;
 }
 
 /* 提交按钮样式 */

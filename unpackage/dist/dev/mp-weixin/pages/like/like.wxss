@@ -512,6 +512,20 @@
   margin-top: 4rpx;
   display: block;
 }
+.date-display {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  min-height: 80rpx;
+}
+.date-text {
+  color: #333;
+  font-size: 28rpx;
+}
+.date-placeholder {
+  color: #999;
+  font-size: 28rpx;
+}
 
 /* 提交按钮样式 */
 .submit-btn {
