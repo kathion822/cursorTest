@@ -35,6 +35,11 @@ const _sfc_main = {
       historyYearIndex: 0,
       historyMonthIndex: 0,
       historyDayIndex: 0,
+      // 分类筛选相关
+      showCategoryFilterModal: false,
+      // 报告详情相关
+      showReportDetailModal: false,
+      currentReport: {},
       // 报告表单
       reportForm: {
         id: "",
@@ -97,6 +102,17 @@ const _sfc_main = {
           (report) => report.title.toLowerCase().includes(keyword) || report.content.toLowerCase().includes(keyword)
         );
       }
+      if (this.selectedCategory !== "全部") {
+        const statusMap = {
+          "已通过": "approved",
+          "待审批": "pending",
+          "驳回": "rejected"
+        };
+        const targetStatus = statusMap[this.selectedCategory];
+        if (targetStatus) {
+          filtered = filtered.filter((report) => report.status === targetStatus);
+        }
+      }
       return filtered;
     },
     // 已批阅数量
@@ -135,16 +151,16 @@ const _sfc_main = {
   mounted() {
     try {
       const systemInfo = common_vendor.index.getSystemInfoSync();
-      common_vendor.index.__f__("log", "at pages/like/like.vue:452", "系统信息:", systemInfo);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:453", "运行平台:", systemInfo.platform);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:454", "运行环境:", systemInfo.uniPlatform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:545", "系统信息:", systemInfo);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:546", "运行平台:", systemInfo.platform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:547", "运行环境:", systemInfo.uniPlatform);
     } catch (error) {
-      common_vendor.index.__f__("warn", "at pages/like/like.vue:456", "获取系统信息失败:", error);
+      common_vendor.index.__f__("warn", "at pages/like/like.vue:549", "获取系统信息失败:", error);
     }
     this.initDatePicker();
     this.loadReportList();
     {
-      common_vendor.index.__f__("log", "at pages/like/like.vue:467", "开发环境：忽略WebSocket连接错误");
+      common_vendor.index.__f__("log", "at pages/like/like.vue:560", "开发环境：忽略WebSocket连接错误");
     }
   },
   methods: {
@@ -164,6 +180,29 @@ const _sfc_main = {
       this.historyYearIndex = 0;
       this.historyMonthIndex = now.getMonth();
       this.historyDayIndex = now.getDate() - 1;
+      this.showCategoryFilterModal = false;
+      this.showHistoryDatePickerModal = false;
+      this.showReportDetailModal = false;
+    },
+    // 获取状态文本
+    getStatusText(status) {
+      const statusMap = {
+        "approved": "已通过",
+        "pending": "待审批",
+        "rejected": "驳回",
+        "draft": "草稿"
+      };
+      return statusMap[status] || "未知状态";
+    },
+    // 获取状态样式类
+    getStatusClass(status) {
+      const classMap = {
+        "approved": "status-approved",
+        "pending": "status-pending",
+        "rejected": "status-rejected",
+        "draft": "status-draft"
+      };
+      return classMap[status] || "status-default";
     },
     // 初始化日期选择器
     initDatePicker() {
@@ -249,6 +288,29 @@ const _sfc_main = {
     // 关闭历史报告日期筛选器
     closeHistoryDatePicker() {
       this.showHistoryDatePickerModal = false;
+    },
+    // 显示分类筛选器
+    showCategoryFilter() {
+      this.showCategoryFilterModal = true;
+    },
+    // 关闭分类筛选器
+    closeCategoryFilter() {
+      this.showCategoryFilterModal = false;
+    },
+    // 选择分类
+    selectCategory(category) {
+      this.selectedCategory = category;
+      this.closeCategoryFilter();
+    },
+    // 显示报告详情
+    viewReportDetail(report) {
+      this.currentReport = report;
+      this.showReportDetailModal = true;
+    },
+    // 关闭报告详情
+    closeReportDetail() {
+      this.showReportDetailModal = false;
+      this.currentReport = {};
     },
     // 更新天数数组（根据年月动态计算）
     updateDays(year, month) {
@@ -396,7 +458,7 @@ const _sfc_main = {
       try {
         common_vendor.index.setStorageSync("workReports", this.reportList);
       } catch (error) {
-        common_vendor.index.__f__("warn", "at pages/like/like.vue:819", "本地存储失败:", error);
+        common_vendor.index.__f__("warn", "at pages/like/like.vue:967", "本地存储失败:", error);
       }
       this.resetForm();
       this.activeTab = "history";
@@ -411,13 +473,13 @@ const _sfc_main = {
         const storedReports = common_vendor.index.getStorageSync("workReports");
         if (storedReports && Array.isArray(storedReports)) {
           this.reportList = storedReports;
-          common_vendor.index.__f__("log", "at pages/like/like.vue:841", "从本地存储加载报告:", this.reportList.length);
+          common_vendor.index.__f__("log", "at pages/like/like.vue:989", "从本地存储加载报告:", this.reportList.length);
         } else {
           this.reportList = [...this.mockReports];
-          common_vendor.index.__f__("log", "at pages/like/like.vue:845", "使用模拟数据:", this.reportList.length);
+          common_vendor.index.__f__("log", "at pages/like/like.vue:993", "使用模拟数据:", this.reportList.length);
         }
       } catch (error) {
-        common_vendor.index.__f__("warn", "at pages/like/like.vue:848", "加载本地数据失败，使用模拟数据:", error);
+        common_vendor.index.__f__("warn", "at pages/like/like.vue:996", "加载本地数据失败，使用模拟数据:", error);
         this.reportList = [...this.mockReports];
       }
     },
@@ -506,7 +568,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     t: common_vendor.o([($event) => $data.searchKeyword = $event.detail.value, (...args) => $options.onSearchInput && $options.onSearchInput(...args)]),
     v: $data.searchKeyword,
     w: common_vendor.t($data.selectedCategory),
-    x: common_vendor.o((...args) => _ctx.showCategoryFilter && _ctx.showCategoryFilter(...args)),
+    x: common_vendor.o((...args) => $options.showCategoryFilter && $options.showCategoryFilter(...args)),
     y: common_vendor.t($data.selectedDateText),
     z: common_vendor.o((...args) => $options.showHistoryDatePicker && $options.showHistoryDatePicker(...args)),
     A: $data.searchKeyword
@@ -574,7 +636,45 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     am: common_vendor.o((...args) => $options.onHistoryDayChange && $options.onHistoryDayChange(...args)),
     an: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
     ao: common_vendor.o((...args) => $options.confirmHistoryDatePicker && $options.confirmHistoryDatePicker(...args))
-  } : {});
+  } : {}, {
+    ap: $data.showCategoryFilterModal
+  }, $data.showCategoryFilterModal ? common_vendor.e({
+    aq: common_vendor.o((...args) => $options.closeCategoryFilter && $options.closeCategoryFilter(...args)),
+    ar: $data.selectedCategory === "全部"
+  }, $data.selectedCategory === "全部" ? {} : {}, {
+    as: common_vendor.o(($event) => $options.selectCategory("全部")),
+    at: $data.selectedCategory === "已通过"
+  }, $data.selectedCategory === "已通过" ? {} : {}, {
+    av: common_vendor.o(($event) => $options.selectCategory("已通过")),
+    aw: $data.selectedCategory === "待审批"
+  }, $data.selectedCategory === "待审批" ? {} : {}, {
+    ax: common_vendor.o(($event) => $options.selectCategory("待审批")),
+    ay: $data.selectedCategory === "驳回"
+  }, $data.selectedCategory === "驳回" ? {} : {}, {
+    az: common_vendor.o(($event) => $options.selectCategory("驳回"))
+  }) : {}, {
+    aA: $data.showReportDetailModal
+  }, $data.showReportDetailModal ? common_vendor.e({
+    aB: common_vendor.o((...args) => $options.closeReportDetail && $options.closeReportDetail(...args)),
+    aC: common_vendor.t($data.currentReport.title),
+    aD: common_vendor.t($data.currentReport.date),
+    aE: $data.currentReport.status === "approved" && $data.currentReport.leaderComment
+  }, $data.currentReport.status === "approved" && $data.currentReport.leaderComment ? {
+    aF: common_vendor.t($data.currentReport.leaderComment)
+  } : {}, {
+    aG: common_vendor.t($data.currentReport.content),
+    aH: $data.currentReport.plan
+  }, $data.currentReport.plan ? {
+    aI: common_vendor.t($data.currentReport.plan)
+  } : {}, {
+    aJ: $data.currentReport.problems
+  }, $data.currentReport.problems ? {
+    aK: common_vendor.t($data.currentReport.problems)
+  } : {}, {
+    aL: common_vendor.t($options.getStatusText($data.currentReport.status)),
+    aM: common_vendor.n($options.getStatusClass($data.currentReport.status)),
+    aN: common_vendor.o((...args) => $options.closeReportDetail && $options.closeReportDetail(...args))
+  }) : {});
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render]]);
 wx.createPage(MiniProgramPage);

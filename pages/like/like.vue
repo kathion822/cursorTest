@@ -222,14 +222,14 @@
 			</view>
 					</view>
 					
-		<!-- 历史报告日期筛选弹窗 -->
+				<!-- 历史报告日期筛选弹窗 -->
 		<view class="date-picker-modal" v-if="showHistoryDatePickerModal">
 			<view class="picker-overlay" @click="closeHistoryDatePicker"></view>
 			<view class="picker-container">
 				<view class="picker-header">
 					<text class="picker-title">选择筛选日期</text>
 					<text class="picker-close" @click="closeHistoryDatePicker">×</text>
-						</view>
+				</view>
 				<view class="picker-content">
 					<!-- 年份选择 -->
 					<view class="picker-section">
@@ -259,9 +259,9 @@
 							<view class="picker-display">
 								<text class="picker-text">{{ historySelectedMonth }}月</text>
 								<text class="picker-arrow">▼</text>
-					</view>
+							</view>
 						</picker>
-				</view>
+					</view>
 					
 					<!-- 日期选择 -->
 					<view class="picker-section">
@@ -275,13 +275,86 @@
 							<view class="picker-display">
 								<text class="picker-text">{{ historySelectedDay }}日</text>
 								<text class="picker-arrow">▼</text>
-			</view>
+							</view>
 						</picker>
 					</view>
 				</view>
 				<view class="picker-actions">
 					<button class="picker-btn cancel-btn" @click="closeHistoryDatePicker">取消</button>
 					<button class="picker-btn confirm-btn" @click="confirmHistoryDatePicker">确定</button>
+				</view>
+			</view>
+		</view>
+		
+		<!-- 分类筛选下拉弹窗 -->
+		<view class="category-filter-modal" v-if="showCategoryFilterModal">
+			<view class="picker-overlay" @click="closeCategoryFilter"></view>
+			<view class="category-filter-container">
+				<view class="filter-option" @click="selectCategory('全部')">
+					<text class="filter-option-text">全部</text>
+					<text v-if="selectedCategory === '全部'" class="filter-option-check">✓</text>
+				</view>
+				<view class="filter-option" @click="selectCategory('已通过')">
+					<text class="filter-option-text">已通过</text>
+					<text v-if="selectedCategory === '已通过'" class="filter-option-check">✓</text>
+				</view>
+				<view class="filter-option" @click="selectCategory('待审批')">
+					<text class="filter-option-text">待审批</text>
+					<text v-if="selectedCategory === '待审批'" class="filter-option-check">✓</text>
+				</view>
+				<view class="filter-option" @click="selectCategory('驳回')">
+					<text class="filter-option-text">驳回</text>
+					<text v-if="selectedCategory === '驳回'" class="filter-option-check">✓</text>
+				</view>
+			</view>
+		</view>
+		
+		<!-- 报告详情弹窗 -->
+		<view class="report-detail-modal" v-if="showReportDetailModal">
+			<view class="picker-overlay" @click="closeReportDetail"></view>
+			<view class="report-detail-container">
+				<view class="report-detail-header">
+					<text class="report-detail-title">{{ currentReport.title }}</text>
+					<text class="report-detail-date">{{ currentReport.date }}</text>
+				</view>
+				
+				<!-- 领导批语（仅当状态为已通过时显示） -->
+				<view class="report-detail-section" v-if="currentReport.status === 'approved' && currentReport.leaderComment">
+					<text class="section-label">领导批语</text>
+					<view class="leader-comment-box">
+						<text class="leader-comment-text">{{ currentReport.leaderComment }}</text>
+					</view>
+				</view>
+				
+				<!-- 工作内容 -->
+				<view class="report-detail-section">
+					<text class="section-label">工作内容</text>
+					<text class="section-content">{{ currentReport.content }}</text>
+				</view>
+				
+				<!-- 工作计划 -->
+				<view class="report-detail-section" v-if="currentReport.plan">
+					<text class="section-label">工作计划</text>
+					<text class="section-content">{{ currentReport.plan }}</text>
+				</view>
+				
+				<!-- 遇到的问题 -->
+				<view class="report-detail-section" v-if="currentReport.problems">
+					<text class="section-label">遇到的问题</text>
+					<text class="section-content">{{ currentReport.problems }}</text>
+				</view>
+				
+				<!-- 报告状态 -->
+				<view class="report-detail-section">
+					<text class="section-label">报告状态</text>
+					<view class="status-badge" :class="getStatusClass(currentReport.status)">
+						<text class="status-text">{{ getStatusText(currentReport.status) }}</text>
+					</view>
+				</view>
+				
+				<!-- 关闭按钮 -->
+				<view class="report-detail-actions">
+					<button class="close-btn" @click="closeReportDetail">关闭</button>
 				</view>
 			</view>
 		</view>
@@ -325,6 +398,13 @@ export default {
 			historyYearIndex: 0,
 			historyMonthIndex: 0,
 			historyDayIndex: 0,
+			
+			// 分类筛选相关
+			showCategoryFilterModal: false,
+			
+			// 报告详情相关
+			showReportDetailModal: false,
+			currentReport: {},
 
 			// 报告表单
 			reportForm: {
@@ -393,6 +473,19 @@ export default {
 					report.title.toLowerCase().includes(keyword) ||
 					report.content.toLowerCase().includes(keyword)
 				);
+			}
+			
+			// 分类筛选
+			if (this.selectedCategory !== '全部') {
+				const statusMap = {
+					'已通过': 'approved',
+					'待审批': 'pending',
+					'驳回': 'rejected'
+				};
+				const targetStatus = statusMap[this.selectedCategory];
+				if (targetStatus) {
+					filtered = filtered.filter(report => report.status === targetStatus);
+				}
 			}
 			
 			return filtered;
@@ -492,6 +585,33 @@ export default {
 			this.historyYearIndex = 0;
 			this.historyMonthIndex = now.getMonth();
 			this.historyDayIndex = now.getDate() - 1;
+			
+			// 关闭所有弹窗
+			this.showCategoryFilterModal = false;
+			this.showHistoryDatePickerModal = false;
+			this.showReportDetailModal = false;
+		},
+		
+		// 获取状态文本
+		getStatusText(status) {
+			const statusMap = {
+				'approved': '已通过',
+				'pending': '待审批',
+				'rejected': '驳回',
+				'draft': '草稿'
+			};
+			return statusMap[status] || '未知状态';
+		},
+		
+		// 获取状态样式类
+		getStatusClass(status) {
+			const classMap = {
+				'approved': 'status-approved',
+				'pending': 'status-pending',
+				'rejected': 'status-rejected',
+				'draft': 'status-draft'
+			};
+			return classMap[status] || 'status-default';
 		},
 		
 		// 初始化日期选择器
@@ -612,6 +732,34 @@ export default {
 		// 关闭历史报告日期筛选器
 		closeHistoryDatePicker() {
 			this.showHistoryDatePickerModal = false;
+		},
+		
+		// 显示分类筛选器
+		showCategoryFilter() {
+			this.showCategoryFilterModal = true;
+		},
+		
+		// 关闭分类筛选器
+		closeCategoryFilter() {
+			this.showCategoryFilterModal = false;
+		},
+		
+		// 选择分类
+		selectCategory(category) {
+			this.selectedCategory = category;
+			this.closeCategoryFilter();
+		},
+		
+		// 显示报告详情
+		viewReportDetail(report) {
+			this.currentReport = report;
+			this.showReportDetailModal = true;
+		},
+		
+		// 关闭报告详情
+		closeReportDetail() {
+			this.showReportDetailModal = false;
+			this.currentReport = {};
 		},
 		
 		// 更新天数数组（根据年月动态计算）
@@ -1169,6 +1317,7 @@ export default {
 	right: 0;
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 998;
 }
 
 .picker-container {
@@ -1179,6 +1328,7 @@ export default {
 	width: 100%;
 	max-height: 80vh;
 	overflow-y: auto;
+	z-index: 1000;
 }
 
 .picker-header {
@@ -1506,6 +1656,197 @@ export default {
 .date-placeholder {
 	color: #999;
 	font-size: 28rpx;
+}
+
+/* 分类筛选弹窗样式 */
+.category-filter-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 999;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 200rpx;
+}
+
+.category-filter-container {
+	background-color: #fff;
+	border-radius: 12rpx;
+	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	min-width: 200rpx;
+	position: relative;
+	z-index: 1000;
+}
+
+.filter-option {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24rpx 32rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.filter-option:last-child {
+	border-bottom: none;
+}
+
+.filter-option:hover {
+	background-color: #f8f8f8;
+}
+
+.filter-option-text {
+	font-size: 28rpx;
+	color: #333;
+}
+
+.filter-option-check {
+	font-size: 24rpx;
+	color: #4a90e2;
+	font-weight: bold;
+}
+
+/* 报告详情弹窗样式 */
+.report-detail-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40rpx;
+}
+
+.report-detail-container {
+	background-color: #fff;
+	border-radius: 20rpx;
+	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: auto;
+	position: relative;
+	z-index: 1000;
+}
+
+.report-detail-header {
+	padding: 40rpx 40rpx 20rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+	text-align: center;
+}
+
+.report-detail-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	color: #333;
+	display: block;
+	margin-bottom: 16rpx;
+}
+
+.report-detail-date {
+	font-size: 28rpx;
+	color: #666;
+	display: block;
+}
+
+.report-detail-section {
+	padding: 30rpx 40rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+}
+
+.report-detail-section:last-child {
+	border-bottom: none;
+}
+
+.section-label {
+	font-size: 30rpx;
+	font-weight: bold;
+	color: #333;
+	display: block;
+	margin-bottom: 20rpx;
+}
+
+.section-content {
+	font-size: 28rpx;
+	color: #666;
+	line-height: 1.6;
+	display: block;
+}
+
+.leader-comment-box {
+	border: 2rpx solid #ff6b6b;
+	border-radius: 12rpx;
+	padding: 20rpx;
+	background-color: #fff5f5;
+}
+
+.leader-comment-text {
+	font-size: 28rpx;
+	color: #333;
+	line-height: 1.6;
+	display: block;
+}
+
+.status-badge {
+	display: inline-block;
+	padding: 12rpx 24rpx;
+	border-radius: 20rpx;
+	font-size: 24rpx;
+	font-weight: 500;
+}
+
+.status-approved {
+	background-color: #e8f5e8;
+	color: #52c41a;
+}
+
+.status-pending {
+	background-color: #fff7e6;
+	color: #fa8c16;
+}
+
+.status-rejected {
+	background-color: #fff2f0;
+	color: #ff4d4f;
+}
+
+.status-draft {
+	background-color: #f5f5f5;
+	color: #666;
+}
+
+.status-text {
+	font-size: 24rpx;
+}
+
+.report-detail-actions {
+	padding: 30rpx 40rpx;
+	text-align: center;
+	border-top: 1rpx solid #f0f0f0;
+}
+
+.close-btn {
+	background-color: #4a90e2;
+	color: #fff;
+	border: none;
+	border-radius: 8rpx;
+	padding: 20rpx 60rpx;
+	font-size: 32rpx;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.close-btn:active {
+	background-color: #357abd;
 }
 
 
