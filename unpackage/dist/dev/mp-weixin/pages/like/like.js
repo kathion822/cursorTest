@@ -135,16 +135,16 @@ const _sfc_main = {
   mounted() {
     try {
       const systemInfo = common_vendor.index.getSystemInfoSync();
-      common_vendor.index.__f__("log", "at pages/like/like.vue:454", "系统信息:", systemInfo);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:455", "运行平台:", systemInfo.platform);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:456", "运行环境:", systemInfo.uniPlatform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:452", "系统信息:", systemInfo);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:453", "运行平台:", systemInfo.platform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:454", "运行环境:", systemInfo.uniPlatform);
     } catch (error) {
-      common_vendor.index.__f__("warn", "at pages/like/like.vue:458", "获取系统信息失败:", error);
+      common_vendor.index.__f__("warn", "at pages/like/like.vue:456", "获取系统信息失败:", error);
     }
     this.initDatePicker();
     this.loadReportList();
     {
-      common_vendor.index.__f__("log", "at pages/like/like.vue:469", "开发环境：忽略WebSocket连接错误");
+      common_vendor.index.__f__("log", "at pages/like/like.vue:467", "开发环境：忽略WebSocket连接错误");
     }
   },
   methods: {
@@ -171,7 +171,6 @@ const _sfc_main = {
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth() + 1;
       const currentDay = now.getDate();
-      common_vendor.index.__f__("log", "at pages/like/like.vue:506", "初始化日期选择器:", { currentYear, currentMonth, currentDay });
       this.years = [];
       for (let i = 0; i < 10; i++) {
         this.years.push(currentYear - i);
@@ -190,27 +189,17 @@ const _sfc_main = {
       const formattedDate = `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(currentDay).padStart(2, "0")}`;
       this.$nextTick(() => {
         this.reportForm.date = formattedDate;
-        common_vendor.index.__f__("log", "at pages/like/like.vue:539", "nextTick 设置默认日期:", formattedDate);
-        common_vendor.index.__f__("log", "at pages/like/like.vue:540", "表单日期:", this.reportForm.date);
       });
-      common_vendor.index.__f__("log", "at pages/like/like.vue:543", "设置默认日期:", formattedDate);
       this.initHistoryDatePicker();
     },
     // 显示日期选择器
     showDatePicker() {
-      common_vendor.index.__f__("log", "at pages/like/like.vue:551", "显示日期选择器，当前表单日期:", this.reportForm.date);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:552", "当前选中的年月日:", {
-        selectedYear: this.selectedYear,
-        selectedMonth: this.selectedMonth,
-        selectedDay: this.selectedDay
-      });
       if (this.reportForm.date) {
         const dateParts = this.reportForm.date.split("-");
         if (dateParts.length === 3) {
           const year = parseInt(dateParts[0]);
           const month = parseInt(dateParts[1]);
           const day = parseInt(dateParts[2]);
-          common_vendor.index.__f__("log", "at pages/like/like.vue:566", "解析日期:", { year, month, day });
           this.selectedYear = year;
           this.selectedMonth = month;
           this.selectedDay = day;
@@ -223,11 +212,6 @@ const _sfc_main = {
             this.monthIndex = 0;
           if (this.dayIndex < 0)
             this.dayIndex = 0;
-          common_vendor.index.__f__("log", "at pages/like/like.vue:583", "更新后的索引:", {
-            yearIndex: this.yearIndex,
-            monthIndex: this.monthIndex,
-            dayIndex: this.dayIndex
-          });
           this.updateDays(year, month);
         }
       }
@@ -369,10 +353,7 @@ const _sfc_main = {
       const newDate = `${this.selectedYear}-${String(this.selectedMonth).padStart(2, "0")}-${String(this.selectedDay).padStart(2, "0")}`;
       this.$nextTick(() => {
         this.reportForm.date = newDate;
-        common_vendor.index.__f__("log", "at pages/like/like.vue:785", "nextTick 确认选择日期:", newDate);
-        common_vendor.index.__f__("log", "at pages/like/like.vue:786", "表单日期更新后:", this.reportForm.date);
       });
-      common_vendor.index.__f__("log", "at pages/like/like.vue:789", "确认选择日期:", newDate);
       this.closeDatePicker();
     },
     // 确认历史报告日期筛选
@@ -415,7 +396,7 @@ const _sfc_main = {
       try {
         common_vendor.index.setStorageSync("workReports", this.reportList);
       } catch (error) {
-        common_vendor.index.__f__("warn", "at pages/like/like.vue:846", "本地存储失败:", error);
+        common_vendor.index.__f__("warn", "at pages/like/like.vue:819", "本地存储失败:", error);
       }
       this.resetForm();
       this.activeTab = "history";
@@ -430,13 +411,13 @@ const _sfc_main = {
         const storedReports = common_vendor.index.getStorageSync("workReports");
         if (storedReports && Array.isArray(storedReports)) {
           this.reportList = storedReports;
-          common_vendor.index.__f__("log", "at pages/like/like.vue:868", "从本地存储加载报告:", this.reportList.length);
+          common_vendor.index.__f__("log", "at pages/like/like.vue:841", "从本地存储加载报告:", this.reportList.length);
         } else {
           this.reportList = [...this.mockReports];
-          common_vendor.index.__f__("log", "at pages/like/like.vue:872", "使用模拟数据:", this.reportList.length);
+          common_vendor.index.__f__("log", "at pages/like/like.vue:845", "使用模拟数据:", this.reportList.length);
         }
       } catch (error) {
-        common_vendor.index.__f__("warn", "at pages/like/like.vue:875", "加载本地数据失败，使用模拟数据:", error);
+        common_vendor.index.__f__("warn", "at pages/like/like.vue:848", "加载本地数据失败，使用模拟数据:", error);
         this.reportList = [...this.mockReports];
       }
     },
@@ -504,45 +485,40 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     d: common_vendor.o(($event) => $options.switchTab("history")),
     e: $data.activeTab === "new"
   }, $data.activeTab === "new" ? common_vendor.e({
-    f: !$data.reportForm.title || $data.reportForm.title.trim().length < 2 ? "请输入报告标题" : "",
-    g: $data.reportForm.title,
-    h: common_vendor.o(($event) => $data.reportForm.title = $event.detail.value),
-    i: $data.reportForm.date
+    f: $data.reportForm.title,
+    g: common_vendor.o(($event) => $data.reportForm.title = $event.detail.value),
+    h: $data.reportForm.date
   }, $data.reportForm.date ? {
-    j: common_vendor.t($data.reportForm.date)
+    i: common_vendor.t($data.reportForm.date)
   } : {}, {
-    k: common_vendor.o((...args) => $options.showDatePicker && $options.showDatePicker(...args)),
-    l: common_vendor.t($data.reportForm.date || "空"),
-    m: !$data.reportForm.content || $data.reportForm.content.trim().length < 5 ? "请输入工作内容" : "",
-    n: $data.reportForm.content,
-    o: common_vendor.o(($event) => $data.reportForm.content = $event.detail.value),
-    p: !$data.reportForm.plan || $data.reportForm.plan.trim().length < 5 ? "请输入下周工作计划" : "",
-    q: $data.reportForm.plan,
-    r: common_vendor.o(($event) => $data.reportForm.plan = $event.detail.value),
-    s: !$data.reportForm.problems || $data.reportForm.problems.trim().length < 5 ? "请输入遇到的问题(选填)" : "",
-    t: $data.reportForm.problems,
-    v: common_vendor.o(($event) => $data.reportForm.problems = $event.detail.value),
-    w: common_vendor.o((...args) => $options.submitReport && $options.submitReport(...args))
+    j: common_vendor.o((...args) => $options.showDatePicker && $options.showDatePicker(...args)),
+    k: $data.reportForm.content,
+    l: common_vendor.o(($event) => $data.reportForm.content = $event.detail.value),
+    m: $data.reportForm.plan,
+    n: common_vendor.o(($event) => $data.reportForm.plan = $event.detail.value),
+    o: $data.reportForm.problems,
+    p: common_vendor.o(($event) => $data.reportForm.problems = $event.detail.value),
+    q: common_vendor.o((...args) => $options.submitReport && $options.submitReport(...args))
   }) : {}, {
-    x: $data.activeTab === "history"
+    r: $data.activeTab === "history"
   }, $data.activeTab === "history" ? common_vendor.e({
-    y: !$data.searchKeyword || $data.searchKeyword.trim().length < 2 ? "搜索报告标题或内容..." : "",
-    z: common_vendor.o([($event) => $data.searchKeyword = $event.detail.value, (...args) => $options.onSearchInput && $options.onSearchInput(...args)]),
-    A: $data.searchKeyword,
-    B: common_vendor.t($data.selectedCategory),
-    C: common_vendor.o((...args) => _ctx.showCategoryFilter && _ctx.showCategoryFilter(...args)),
-    D: common_vendor.t($data.selectedDateText),
-    E: common_vendor.o((...args) => $options.showHistoryDatePicker && $options.showHistoryDatePicker(...args)),
-    F: $data.searchKeyword
+    s: !$data.searchKeyword || $data.searchKeyword.trim().length < 2 ? "搜索报告标题或内容..." : "",
+    t: common_vendor.o([($event) => $data.searchKeyword = $event.detail.value, (...args) => $options.onSearchInput && $options.onSearchInput(...args)]),
+    v: $data.searchKeyword,
+    w: common_vendor.t($data.selectedCategory),
+    x: common_vendor.o((...args) => _ctx.showCategoryFilter && _ctx.showCategoryFilter(...args)),
+    y: common_vendor.t($data.selectedDateText),
+    z: common_vendor.o((...args) => $options.showHistoryDatePicker && $options.showHistoryDatePicker(...args)),
+    A: $data.searchKeyword
   }, $data.searchKeyword ? {
-    G: common_vendor.o((...args) => $options.resetFilters && $options.resetFilters(...args))
+    B: common_vendor.o((...args) => $options.resetFilters && $options.resetFilters(...args))
   } : {}, {
-    H: common_vendor.t($data.reportList.length),
-    I: common_vendor.t($options.approvedCount),
-    J: common_vendor.t($options.pendingCount),
-    K: $options.filteredReportList.length > 0
+    C: common_vendor.t($data.reportList.length),
+    D: common_vendor.t($options.approvedCount),
+    E: common_vendor.t($options.pendingCount),
+    F: $options.filteredReportList.length > 0
   }, $options.filteredReportList.length > 0 ? {
-    L: common_vendor.f($options.filteredReportList, (report, index, i0) => {
+    G: common_vendor.f($options.filteredReportList, (report, index, i0) => {
       return common_vendor.e({
         a: common_vendor.t(report.title),
         b: common_vendor.t($options.getStatusText(report.status)),
@@ -561,43 +537,43 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       });
     })
   } : {}) : {}, {
-    M: $data.showDatePickerModal
+    H: $data.showDatePickerModal
   }, $data.showDatePickerModal ? {
-    N: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
-    O: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
-    P: common_vendor.t($data.selectedYear),
-    Q: $data.yearIndex,
-    R: $data.years,
-    S: common_vendor.o((...args) => $options.onYearChange && $options.onYearChange(...args)),
-    T: common_vendor.t($data.selectedMonth),
-    U: $data.monthIndex,
-    V: $data.months,
-    W: common_vendor.o((...args) => $options.onMonthChange && $options.onMonthChange(...args)),
-    X: common_vendor.t($data.selectedDay),
-    Y: $data.dayIndex,
-    Z: $data.days,
-    aa: common_vendor.o((...args) => $options.onDayChange && $options.onDayChange(...args)),
-    ab: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
-    ac: common_vendor.o((...args) => $options.confirmDatePicker && $options.confirmDatePicker(...args))
+    I: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
+    J: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
+    K: common_vendor.t($data.selectedYear),
+    L: $data.yearIndex,
+    M: $data.years,
+    N: common_vendor.o((...args) => $options.onYearChange && $options.onYearChange(...args)),
+    O: common_vendor.t($data.selectedMonth),
+    P: $data.monthIndex,
+    Q: $data.months,
+    R: common_vendor.o((...args) => $options.onMonthChange && $options.onMonthChange(...args)),
+    S: common_vendor.t($data.selectedDay),
+    T: $data.dayIndex,
+    U: $data.days,
+    V: common_vendor.o((...args) => $options.onDayChange && $options.onDayChange(...args)),
+    W: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
+    X: common_vendor.o((...args) => $options.confirmDatePicker && $options.confirmDatePicker(...args))
   } : {}, {
-    ad: $data.showHistoryDatePickerModal
+    Y: $data.showHistoryDatePickerModal
   }, $data.showHistoryDatePickerModal ? {
-    ae: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
-    af: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
-    ag: common_vendor.t($data.historySelectedYear),
-    ah: $data.historyYearIndex,
-    ai: $data.historyYears,
-    aj: common_vendor.o((...args) => $options.onHistoryYearChange && $options.onHistoryYearChange(...args)),
-    ak: common_vendor.t($data.historySelectedMonth),
-    al: $data.historyMonthIndex,
-    am: $data.historyMonths,
-    an: common_vendor.o((...args) => $options.onHistoryMonthChange && $options.onHistoryMonthChange(...args)),
-    ao: common_vendor.t($data.historySelectedDay),
-    ap: $data.historyDayIndex,
-    aq: $data.historyDays,
-    ar: common_vendor.o((...args) => $options.onHistoryDayChange && $options.onHistoryDayChange(...args)),
-    as: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
-    at: common_vendor.o((...args) => $options.confirmHistoryDatePicker && $options.confirmHistoryDatePicker(...args))
+    Z: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
+    aa: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
+    ab: common_vendor.t($data.historySelectedYear),
+    ac: $data.historyYearIndex,
+    ad: $data.historyYears,
+    ae: common_vendor.o((...args) => $options.onHistoryYearChange && $options.onHistoryYearChange(...args)),
+    af: common_vendor.t($data.historySelectedMonth),
+    ag: $data.historyMonthIndex,
+    ah: $data.historyMonths,
+    ai: common_vendor.o((...args) => $options.onHistoryMonthChange && $options.onHistoryMonthChange(...args)),
+    aj: common_vendor.t($data.historySelectedDay),
+    ak: $data.historyDayIndex,
+    al: $data.historyDays,
+    am: common_vendor.o((...args) => $options.onHistoryDayChange && $options.onHistoryDayChange(...args)),
+    an: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
+    ao: common_vendor.o((...args) => $options.confirmHistoryDatePicker && $options.confirmHistoryDatePicker(...args))
   } : {});
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render]]);

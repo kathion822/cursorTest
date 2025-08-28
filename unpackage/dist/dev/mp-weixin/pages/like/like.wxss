@@ -506,12 +506,6 @@
   margin-top: 8rpx;
   display: block;
 }
-.debug-info {
-  font-size: 20rpx;
-  color: #ff6b6b;
-  margin-top: 4rpx;
-  display: block;
-}
 .date-display {
   cursor: pointer;
   display: flex;

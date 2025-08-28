@@ -21,59 +21,57 @@
 			
 		<!-- 新建报告表单 -->
 		<view class="form-container" v-if="activeTab === 'new'">
-					<view class="form-group">
+			<view class="form-group">
 				<text class="form-label">报告标题</text>
-						<input 
-							class="form-input" 
-							v-model="reportForm.title" 
-					:placeholder="!reportForm.title || reportForm.title.trim().length < 2 ? '请输入报告标题' : ''"
-							maxlength="50"
-						/>
-					</view>
-					
-					<view class="form-group">
-						<text class="form-label">报告日期</text>
-						<view class="form-input date-display" @click="showDatePicker">
-							<text v-if="reportForm.date" class="date-text">{{ reportForm.date }}</text>
-							<text v-else class="date-placeholder">请选择日期</text>
-						</view>
-						<text class="form-tip">只能选择当天及之前的日期</text>
-						<!-- 调试信息 -->
-						<text class="debug-info">当前日期值: {{ reportForm.date || '空' }}</text>
-					</view>
+				<input 
+					class="form-input" 
+					v-model="reportForm.title" 
+					placeholder="请输入报告标题"
+					maxlength="50"
+				/>
+			</view>
+			
+			<view class="form-group">
+				<text class="form-label">报告日期</text>
+				<view class="form-input date-display" @click="showDatePicker">
+					<text v-if="reportForm.date" class="date-text">{{ reportForm.date }}</text>
+					<text v-else class="date-placeholder">请选择日期</text>
+				</view>
+				<text class="form-tip">只能选择当天及之前的日期</text>
+			</view>
 			
 			<view class="form-group">
 				<text class="form-label">工作内容</text>
-						<textarea 
-							class="form-textarea" 
-							v-model="reportForm.content" 
-					:placeholder="!reportForm.content || reportForm.content.trim().length < 5 ? '请输入工作内容' : ''"
-							maxlength="1000"
-						/>
-					</view>
-					
-					<view class="form-group">
+				<textarea 
+					class="form-textarea" 
+					v-model="reportForm.content" 
+					placeholder="请输入工作内容"
+					maxlength="1000"
+				/>
+			</view>
+			
+			<view class="form-group">
 				<text class="form-label">工作计划</text>
-						<textarea 
-							class="form-textarea" 
+				<textarea 
+					class="form-textarea" 
 					v-model="reportForm.plan" 
-					:placeholder="!reportForm.plan || reportForm.plan.trim().length < 5 ? '请输入下周工作计划' : ''"
+					placeholder="请输入下周工作计划"
 					maxlength="300"
 				/>
-					</view>
-					
-					<view class="form-group">
+			</view>
+			
+			<view class="form-group">
 				<text class="form-label">遇到的问题</text>
-						<textarea 
-							class="form-textarea" 
+				<textarea 
+					class="form-textarea" 
 					v-model="reportForm.problems" 
-					:placeholder="!reportForm.problems || reportForm.problems.trim().length < 5 ? '请输入遇到的问题(选填)' : ''"
-							maxlength="300"
-						/>
-					</view>
-					
+					placeholder="请输入遇到的问题(选填)"
+					maxlength="200"
+				/>
+			</view>
+			
 			<button class="submit-btn" @click="submitReport">提交报告</button>
-					</view>
+		</view>
 		
 		<!-- 历史报告列表 -->
 		<view class="history-container" v-if="activeTab === 'history'">
@@ -503,8 +501,6 @@ export default {
 			const currentMonth = now.getMonth() + 1;
 			const currentDay = now.getDate();
 			
-			console.log('初始化日期选择器:', { currentYear, currentMonth, currentDay });
-			
 			// 生成年份数组（当前年份往前推10年，不能选择未来日期）
 			this.years = [];
 			for (let i = 0; i < 10; i++) {
@@ -536,11 +532,7 @@ export default {
 			// 使用 nextTick 确保 DOM 更新
 			this.$nextTick(() => {
 				this.reportForm.date = formattedDate;
-				console.log('nextTick 设置默认日期:', formattedDate);
-				console.log('表单日期:', this.reportForm.date);
 			});
-			
-			console.log('设置默认日期:', formattedDate);
 			
 			// 初始化历史报告日期筛选器
 			this.initHistoryDatePicker();
@@ -548,13 +540,6 @@ export default {
 		
 		// 显示日期选择器
 		showDatePicker() {
-			console.log('显示日期选择器，当前表单日期:', this.reportForm.date);
-			console.log('当前选中的年月日:', { 
-				selectedYear: this.selectedYear, 
-				selectedMonth: this.selectedMonth, 
-				selectedDay: this.selectedDay 
-			});
-			
 			// 确保弹窗打开时显示当前表单中的日期
 			if (this.reportForm.date) {
 				const dateParts = this.reportForm.date.split('-');
@@ -562,8 +547,6 @@ export default {
 					const year = parseInt(dateParts[0]);
 					const month = parseInt(dateParts[1]);
 					const day = parseInt(dateParts[2]);
-					
-					console.log('解析日期:', { year, month, day });
 					
 					// 更新选中的年月日
 					this.selectedYear = year;
@@ -579,12 +562,6 @@ export default {
 					if (this.yearIndex < 0) this.yearIndex = 0;
 					if (this.monthIndex < 0) this.monthIndex = 0;
 					if (this.dayIndex < 0) this.dayIndex = 0;
-					
-					console.log('更新后的索引:', { 
-						yearIndex: this.yearIndex, 
-						monthIndex: this.monthIndex, 
-						dayIndex: this.dayIndex 
-					});
 					
 					// 重新计算天数
 					this.updateDays(year, month);
@@ -763,7 +740,7 @@ export default {
 		
 		// 确认日期选择
 		confirmDatePicker() {
-			// 验证选择的日期不能超过今天
+			// 验证选择的日期不能超过未来日期
 			const selectedDate = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
 			const today = new Date();
 			today.setHours(23, 59, 59, 999); // 设置为今天的最后一刻
@@ -782,11 +759,7 @@ export default {
 			// 使用 nextTick 确保 DOM 更新
 			this.$nextTick(() => {
 				this.reportForm.date = newDate;
-				console.log('nextTick 确认选择日期:', newDate);
-				console.log('表单日期更新后:', this.reportForm.date);
 			});
-			
-			console.log('确认选择日期:', newDate);
 			
 			this.closeDatePicker();
 		},
@@ -1518,13 +1491,6 @@ export default {
 	display: block;
 }
 
-.debug-info {
-	font-size: 20rpx;
-	color: #ff6b6b;
-	margin-top: 4rpx;
-	display: block;
-}
-
 .date-display {
 	cursor: pointer;
 	display: flex;
@@ -1541,6 +1507,8 @@ export default {
 	color: #999;
 	font-size: 28rpx;
 }
+
+
 
 /* 提交按钮样式 */
 .submit-btn {
