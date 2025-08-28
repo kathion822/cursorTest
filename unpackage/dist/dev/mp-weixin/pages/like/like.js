@@ -3,184 +3,453 @@ const common_vendor = require("../../common/vendor.js");
 const _sfc_main = {
   data() {
     return {
+      // 当前激活的标签页
+      activeTab: "new",
       // 报告列表
       reportList: [],
-      // 当前查看的报告
-      currentReport: {},
-      // 是否正在编辑
-      isEditing: false,
+      // 搜索关键词
+      searchKeyword: "",
+      // 选中的分类
+      selectedCategory: "全部",
+      // 选中的日期文本
+      selectedDateText: "选择日期",
+      // 新建报告日期选择器相关
+      showDatePickerModal: false,
+      years: [],
+      months: [],
+      days: [],
+      selectedYear: (/* @__PURE__ */ new Date()).getFullYear(),
+      selectedMonth: (/* @__PURE__ */ new Date()).getMonth() + 1,
+      selectedDay: (/* @__PURE__ */ new Date()).getDate(),
+      yearIndex: 0,
+      monthIndex: 0,
+      dayIndex: 0,
+      // 历史报告日期筛选相关
+      showHistoryDatePickerModal: false,
+      historyYears: [],
+      historyMonths: [],
+      historyDays: [],
+      historySelectedYear: (/* @__PURE__ */ new Date()).getFullYear(),
+      historySelectedMonth: (/* @__PURE__ */ new Date()).getMonth() + 1,
+      historySelectedDay: (/* @__PURE__ */ new Date()).getDate(),
+      historyYearIndex: 0,
+      historyMonthIndex: 0,
+      historyDayIndex: 0,
       // 报告表单
       reportForm: {
         id: "",
         title: "",
+        date: "",
         content: "",
-        summary: "",
-        nextPlan: ""
+        plan: "",
+        problems: ""
       },
       // 模拟数据
       mockReports: [
         {
           id: "1",
-          title: "本周项目开发进度报告",
-          content: "本周主要完成了用户管理模块的开发，包括用户注册、登录、权限管理等功能。在开发过程中遇到了一些技术难点，通过查阅资料和团队讨论得到了解决。整体进度符合预期，预计下周可以完成测试阶段。",
-          summary: "用户管理模块开发完成，技术难点已解决，进度符合预期。",
-          nextPlan: "下周进行功能测试，修复发现的bug，准备部署上线。",
+          title: "第一周工作报告",
+          content: "本周完成了项目需求分析和原型设计,与客户进行了多次沟通确认需求细节。通过深入分析用户需求，制定了详细的功能规划和技术方案。",
+          plan: "下周进行功能测试，修复发现的bug，准备部署上线。",
+          problems: "遇到了一些技术难点，已通过查阅资料和团队讨论解决。",
+          summary: "项目需求分析完成，原型设计通过客户确认。",
           author: "张三",
           status: "approved",
-          createTime: "2024-01-15 14:30:00",
-          leaderComment: "工作进展良好，技术难点解决得当。建议在测试阶段重点关注用户体验，确保功能稳定性。",
-          commentTime: "2024-01-16 09:15:00"
+          createTime: "2023-05-01 14:30:00",
+          date: "2023-05-01",
+          leaderComment: "需求分析很详细，原型设计符合预期。"
         },
         {
           id: "2",
-          title: "月度工作总结报告",
-          content: "本月完成了三个重要项目的交付，客户满意度较高。团队协作效率提升，新员工培训计划执行顺利。在项目管理方面积累了一些经验，为后续工作提供了参考。",
-          summary: "三个项目成功交付，团队效率提升，新员工培训完成。",
-          nextPlan: "下月重点推进新项目立项，优化项目管理流程，提升团队技能。",
+          title: "第二周工作报告",
+          content: "本周完成了首页和用户中心的开发,实现了基本的页面布局和交互功能。页面响应式设计良好，用户体验流畅。",
+          plan: "下月重点推进新项目立项，优化项目管理流程，提升团队技能。",
+          problems: "项目交付时间紧张，通过加班和优化流程解决。",
+          summary: "首页和用户中心开发完成，页面布局和交互功能实现。",
           author: "李四",
-          status: "pending",
-          createTime: "2024-01-10 16:45:00",
-          leaderComment: "",
-          commentTime: ""
+          status: "approved",
+          createTime: "2023-05-08 16:45:00",
+          date: "2023-05-08",
+          leaderComment: "开发进度良好，页面设计美观。"
         },
         {
           id: "3",
-          title: "技术调研报告",
-          content: "针对新技术的应用进行了深入调研，分析了技术优势、适用场景和潜在风险。通过对比分析，推荐采用新技术方案，预计可以提升系统性能30%以上。",
+          title: "第三周工作报告",
+          content: "针对新技术的应用进行了深入调研，分析了技术优势、适用场景和潜在风险。通过对比分析，推荐采用新技术方案。",
+          plan: "制定技术迁移计划，进行小规模试点，评估实际效果。",
+          problems: "新技术学习曲线较陡，需要更多培训时间。",
           summary: "新技术调研完成，推荐采用，预计性能提升30%以上。",
-          nextPlan: "制定技术迁移计划，进行小规模试点，评估实际效果。",
           author: "王五",
-          status: "draft",
-          createTime: "2024-01-12 11:20:00",
-          leaderComment: "",
-          commentTime: ""
+          status: "pending",
+          createTime: "2023-05-12 11:20:00",
+          date: "2023-05-12"
         }
       ]
     };
   },
   computed: {
-    // 表单验证
-    isFormValid() {
-      return this.reportForm.title.trim() && this.reportForm.content.trim();
+    // 筛选后的报告列表
+    filteredReportList() {
+      let filtered = this.reportList;
+      if (this.searchKeyword.trim()) {
+        const keyword = this.searchKeyword.toLowerCase();
+        filtered = filtered.filter(
+          (report) => report.title.toLowerCase().includes(keyword) || report.content.toLowerCase().includes(keyword)
+        );
+      }
+      return filtered;
+    },
+    // 已批阅数量
+    approvedCount() {
+      return this.reportList.filter((report) => report.status === "approved").length;
+    },
+    // 待批阅数量
+    pendingCount() {
+      return this.reportList.filter((report) => report.status === "pending").length;
+    },
+    // 日期输入框的 placeholder
+    datePlaceholder() {
+      return !this.reportForm.date || this.reportForm.date.length < 10 ? "请选择日期" : "";
+    },
+    // 标题输入框的 placeholder
+    titlePlaceholder() {
+      return !this.reportForm.title || this.reportForm.title.trim().length < 2 ? "请输入报告标题" : "";
+    },
+    // 内容输入框的 placeholder
+    contentPlaceholder() {
+      return !this.reportForm.content || this.reportForm.content.trim().length < 5 ? "请输入工作内容" : "";
+    },
+    // 计划输入框的 placeholder
+    planPlaceholder() {
+      return !this.reportForm.plan || this.reportForm.plan.trim().length < 5 ? "请输入下周工作计划" : "";
+    },
+    // 问题输入框的 placeholder
+    problemsPlaceholder() {
+      return !this.reportForm.problems || this.reportForm.problems.trim().length < 5 ? "请输入遇到的问题(选填)" : "";
+    },
+    // 搜索框的 placeholder
+    searchPlaceholder() {
+      return !this.searchKeyword || this.searchKeyword.trim().length < 2 ? "搜索报告标题或内容..." : "";
     }
   },
   mounted() {
     try {
       const systemInfo = common_vendor.index.getSystemInfoSync();
-      common_vendor.index.__f__("log", "at pages/like/like.vue:243", "系统信息:", systemInfo);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:244", "运行平台:", systemInfo.platform);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:245", "运行环境:", systemInfo.uniPlatform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:457", "系统信息:", systemInfo);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:458", "运行平台:", systemInfo.platform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:459", "运行环境:", systemInfo.uniPlatform);
     } catch (error) {
-      common_vendor.index.__f__("warn", "at pages/like/like.vue:247", "获取系统信息失败:", error);
+      common_vendor.index.__f__("warn", "at pages/like/like.vue:461", "获取系统信息失败:", error);
     }
+    this.initDatePicker();
     this.loadReportList();
+    {
+      common_vendor.index.__f__("log", "at pages/like/like.vue:472", "开发环境：忽略WebSocket连接错误");
+    }
   },
   methods: {
-    // 加载报告列表
-    loadReportList() {
-      try {
-        const storedReports = common_vendor.index.getStorageSync("workReports");
-        if (storedReports && Array.isArray(storedReports)) {
-          this.reportList = storedReports;
-          common_vendor.index.__f__("log", "at pages/like/like.vue:262", "从本地存储加载报告:", this.reportList.length);
-        } else {
-          this.reportList = [...this.mockReports];
-          common_vendor.index.__f__("log", "at pages/like/like.vue:266", "使用模拟数据:", this.reportList.length);
+    // 切换标签页
+    switchTab(tab) {
+      this.activeTab = tab;
+    },
+    // 重置筛选
+    resetFilters() {
+      this.searchKeyword = "";
+      this.selectedCategory = "全部";
+      this.selectedDateText = "选择日期";
+      const now = /* @__PURE__ */ new Date();
+      this.historySelectedYear = now.getFullYear();
+      this.historySelectedMonth = now.getMonth() + 1;
+      this.historySelectedDay = now.getDate();
+      this.historyYearIndex = 0;
+      this.historyMonthIndex = now.getMonth();
+      this.historyDayIndex = now.getDate() - 1;
+    },
+    // 初始化日期选择器
+    initDatePicker() {
+      const now = /* @__PURE__ */ new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      const currentDay = now.getDate();
+      common_vendor.index.__f__("log", "at pages/like/like.vue:509", "初始化日期选择器:", { currentYear, currentMonth, currentDay });
+      this.years = [];
+      for (let i = 0; i < 10; i++) {
+        this.years.push(currentYear - i);
+      }
+      this.months = [];
+      for (let i = 1; i <= 12; i++) {
+        this.months.push(i);
+      }
+      this.updateDays(currentYear, currentMonth);
+      this.selectedYear = currentYear;
+      this.selectedMonth = currentMonth;
+      this.selectedDay = currentDay;
+      this.yearIndex = 0;
+      this.monthIndex = currentMonth - 1;
+      this.dayIndex = currentDay - 1;
+      const formattedDate = `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(currentDay).padStart(2, "0")}`;
+      this.$nextTick(() => {
+        this.reportForm.date = formattedDate;
+        common_vendor.index.__f__("log", "at pages/like/like.vue:542", "nextTick 设置默认日期:", formattedDate);
+        common_vendor.index.__f__("log", "at pages/like/like.vue:543", "表单日期:", this.reportForm.date);
+      });
+      common_vendor.index.__f__("log", "at pages/like/like.vue:546", "设置默认日期:", formattedDate);
+      this.initHistoryDatePicker();
+    },
+    // 显示日期选择器
+    showDatePicker() {
+      common_vendor.index.__f__("log", "at pages/like/like.vue:554", "显示日期选择器，当前表单日期:", this.reportForm.date);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:555", "当前选中的年月日:", {
+        selectedYear: this.selectedYear,
+        selectedMonth: this.selectedMonth,
+        selectedDay: this.selectedDay
+      });
+      if (this.reportForm.date) {
+        const dateParts = this.reportForm.date.split("-");
+        if (dateParts.length === 3) {
+          const year = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]);
+          const day = parseInt(dateParts[2]);
+          common_vendor.index.__f__("log", "at pages/like/like.vue:569", "解析日期:", { year, month, day });
+          this.selectedYear = year;
+          this.selectedMonth = month;
+          this.selectedDay = day;
+          this.yearIndex = this.years.indexOf(year);
+          this.monthIndex = month - 1;
+          this.dayIndex = day - 1;
+          if (this.yearIndex < 0)
+            this.yearIndex = 0;
+          if (this.monthIndex < 0)
+            this.monthIndex = 0;
+          if (this.dayIndex < 0)
+            this.dayIndex = 0;
+          common_vendor.index.__f__("log", "at pages/like/like.vue:586", "更新后的索引:", {
+            yearIndex: this.yearIndex,
+            monthIndex: this.monthIndex,
+            dayIndex: this.dayIndex
+          });
+          this.updateDays(year, month);
         }
-      } catch (error) {
-        common_vendor.index.__f__("warn", "at pages/like/like.vue:269", "加载本地数据失败，使用模拟数据:", error);
-        this.reportList = [...this.mockReports];
+      }
+      this.showDatePickerModal = true;
+    },
+    // 关闭日期选择器
+    closeDatePicker() {
+      this.showDatePickerModal = false;
+    },
+    // 显示历史报告日期筛选器
+    showHistoryDatePicker() {
+      if (this.selectedDateText && this.selectedDateText !== "选择日期") {
+        const dateParts = this.selectedDateText.split("-");
+        if (dateParts.length === 3) {
+          const year = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]);
+          const day = parseInt(dateParts[2]);
+          this.historySelectedYear = year;
+          this.historySelectedMonth = month;
+          this.historySelectedDay = day;
+          this.historyYearIndex = this.historyYears.indexOf(year);
+          this.historyMonthIndex = month - 1;
+          this.historyDayIndex = day - 1;
+          if (this.historyYearIndex < 0)
+            this.historyYearIndex = 0;
+          if (this.historyMonthIndex < 0)
+            this.historyMonthIndex = 0;
+          if (this.historyDayIndex < 0)
+            this.historyDayIndex = 0;
+          this.updateHistoryDays(year, month);
+        }
+      }
+      this.showHistoryDatePickerModal = true;
+    },
+    // 关闭历史报告日期筛选器
+    closeHistoryDatePicker() {
+      this.showHistoryDatePickerModal = false;
+    },
+    // 更新天数数组（根据年月动态计算）
+    updateDays(year, month) {
+      const now = /* @__PURE__ */ new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      const currentDay = now.getDate();
+      const daysInMonth = new Date(year, month, 0).getDate();
+      let maxDay = daysInMonth;
+      if (year === currentYear && month === currentMonth) {
+        maxDay = currentDay;
+      }
+      this.days = [];
+      for (let i = 1; i <= maxDay; i++) {
+        this.days.push(i);
+      }
+      if (this.selectedDay > maxDay) {
+        this.selectedDay = maxDay;
+        this.dayIndex = maxDay - 1;
       }
     },
-    // 显示新建报告弹窗
-    showNewReportModal() {
-      this.isEditing = false;
-      this.resetForm();
-      this.$refs.reportModal.open();
+    // 初始化历史报告日期筛选器
+    initHistoryDatePicker() {
+      const now = /* @__PURE__ */ new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      const currentDay = now.getDate();
+      this.historyYears = [];
+      for (let i = 0; i < 10; i++) {
+        this.historyYears.push(currentYear - i);
+      }
+      this.historyMonths = [];
+      for (let i = 1; i <= 12; i++) {
+        this.historyMonths.push(i);
+      }
+      this.updateHistoryDays(currentYear, currentMonth);
+      this.historySelectedYear = currentYear;
+      this.historySelectedMonth = currentMonth;
+      this.historySelectedDay = currentDay;
+      this.historyYearIndex = 0;
+      this.historyMonthIndex = currentMonth - 1;
+      this.historyDayIndex = currentDay - 1;
     },
-    // 关闭报告弹窗
-    closeReportModal() {
-      this.$refs.reportModal.close();
-      this.resetForm();
+    // 更新历史报告日期筛选器的天数数组
+    updateHistoryDays(year, month) {
+      const daysInMonth = new Date(year, month, 0).getDate();
+      this.historyDays = [];
+      for (let i = 1; i <= daysInMonth; i++) {
+        this.historyDays.push(i);
+      }
+      if (this.historySelectedDay > daysInMonth) {
+        this.historySelectedDay = daysInMonth;
+        this.historyDayIndex = daysInMonth - 1;
+      }
     },
-    // 关闭详情弹窗
-    closeDetailModal() {
-      this.$refs.detailModal.close();
+    // 年份变化
+    onYearChange(e) {
+      this.yearIndex = e.detail.value;
+      this.selectedYear = this.years[this.yearIndex];
+      this.updateDays(this.selectedYear, this.selectedMonth);
     },
-    // 重置表单
-    resetForm() {
-      this.reportForm = {
-        id: "",
-        title: "",
-        content: "",
-        summary: "",
-        nextPlan: ""
-      };
+    // 月份变化
+    onMonthChange(e) {
+      this.monthIndex = e.detail.value;
+      this.selectedMonth = this.months[this.monthIndex];
+      this.updateDays(this.selectedYear, this.selectedMonth);
     },
-    // 保存报告
-    async saveReport() {
-      if (!this.isFormValid) {
+    // 历史报告年份变化
+    onHistoryYearChange(e) {
+      this.historyYearIndex = e.detail.value;
+      this.historySelectedYear = this.historyYears[this.historyYearIndex];
+      this.updateHistoryDays(this.historySelectedYear, this.historySelectedMonth);
+    },
+    // 历史报告月份变化
+    onHistoryMonthChange(e) {
+      this.historyMonthIndex = e.detail.value;
+      this.historySelectedMonth = this.historyMonths[this.historyMonthIndex];
+      this.updateHistoryDays(this.historySelectedYear, this.historySelectedMonth);
+    },
+    // 历史报告日期变化
+    onHistoryDayChange(e) {
+      this.historyDayIndex = e.detail.value;
+      this.historySelectedDay = this.historyDays[this.historyDayIndex];
+    },
+    // 日期变化
+    onDayChange(e) {
+      this.dayIndex = e.detail.value;
+      this.selectedDay = this.days[this.dayIndex];
+    },
+    // 确认日期选择
+    confirmDatePicker() {
+      const selectedDate = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
+      const today = /* @__PURE__ */ new Date();
+      today.setHours(23, 59, 59, 999);
+      if (selectedDate > today) {
+        common_vendor.index.showToast({
+          title: "不能选择未来日期",
+          icon: "none"
+        });
+        return;
+      }
+      const newDate = `${this.selectedYear}-${String(this.selectedMonth).padStart(2, "0")}-${String(this.selectedDay).padStart(2, "0")}`;
+      this.$nextTick(() => {
+        this.reportForm.date = newDate;
+        common_vendor.index.__f__("log", "at pages/like/like.vue:788", "nextTick 确认选择日期:", newDate);
+        common_vendor.index.__f__("log", "at pages/like/like.vue:789", "表单日期更新后:", this.reportForm.date);
+      });
+      common_vendor.index.__f__("log", "at pages/like/like.vue:792", "确认选择日期:", newDate);
+      this.closeDatePicker();
+    },
+    // 确认历史报告日期筛选
+    confirmHistoryDatePicker() {
+      this.selectedDateText = `${this.historySelectedYear}-${String(this.historySelectedMonth).padStart(2, "0")}-${String(this.historySelectedDay).padStart(2, "0")}`;
+      this.closeHistoryDatePicker();
+    },
+    // 搜索输入
+    onSearchInput() {
+    },
+    // 查看报告详情
+    viewReportDetail(report) {
+      common_vendor.index.showToast({
+        title: "查看详情功能开发中",
+        icon: "none"
+      });
+    },
+    // 提交报告
+    submitReport() {
+      if (!this.reportForm.title.trim() || !this.reportForm.content.trim()) {
         common_vendor.index.showToast({
           title: "请填写必填项",
           icon: "none"
         });
         return;
       }
+      const newReport = {
+        id: Date.now().toString(),
+        title: this.reportForm.title,
+        content: this.reportForm.content,
+        plan: this.reportForm.plan,
+        problems: this.reportForm.problems,
+        summary: this.reportForm.content.substring(0, 100) + "...",
+        author: "当前用户",
+        status: "draft",
+        createTime: (/* @__PURE__ */ new Date()).toISOString(),
+        date: this.reportForm.date
+      };
+      this.reportList.unshift(newReport);
       try {
-        common_vendor.index.showLoading({ title: "保存中..." });
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        if (this.isEditing) {
-          const index = this.reportList.findIndex((item) => item.id === this.reportForm.id);
-          if (index !== -1) {
-            this.reportList[index] = {
-              ...this.reportList[index],
-              ...this.reportForm,
-              updateTime: (/* @__PURE__ */ new Date()).toISOString()
-            };
-          }
-        } else {
-          const newReport = {
-            id: Date.now().toString(),
-            ...this.reportForm,
-            author: "当前用户",
-            status: "draft",
-            createTime: (/* @__PURE__ */ new Date()).toISOString(),
-            leaderComment: "",
-            commentTime: ""
-          };
-          this.reportList.unshift(newReport);
-        }
-        try {
-          common_vendor.index.setStorageSync("workReports", this.reportList);
-        } catch (storageError) {
-          common_vendor.index.__f__("warn", "at pages/like/like.vue:348", "本地存储失败，使用内存存储:", storageError);
-        }
-        common_vendor.index.showToast({
-          title: this.isEditing ? "更新成功" : "创建成功",
-          icon: "success"
-        });
-        this.closeReportModal();
+        common_vendor.index.setStorageSync("workReports", this.reportList);
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/like/like.vue:360", "保存报告失败:", error);
-        common_vendor.index.showToast({
-          title: "保存失败",
-          icon: "none"
-        });
-      } finally {
-        common_vendor.index.hideLoading();
+        common_vendor.index.__f__("warn", "at pages/like/like.vue:849", "本地存储失败:", error);
+      }
+      this.resetForm();
+      this.activeTab = "history";
+      common_vendor.index.showToast({
+        title: "报告提交成功",
+        icon: "success"
+      });
+    },
+    // 加载报告列表
+    loadReportList() {
+      try {
+        const storedReports = common_vendor.index.getStorageSync("workReports");
+        if (storedReports && Array.isArray(storedReports)) {
+          this.reportList = storedReports;
+          common_vendor.index.__f__("log", "at pages/like/like.vue:871", "从本地存储加载报告:", this.reportList.length);
+        } else {
+          this.reportList = [...this.mockReports];
+          common_vendor.index.__f__("log", "at pages/like/like.vue:875", "使用模拟数据:", this.reportList.length);
+        }
+      } catch (error) {
+        common_vendor.index.__f__("warn", "at pages/like/like.vue:878", "加载本地数据失败，使用模拟数据:", error);
+        this.reportList = [...this.mockReports];
       }
     },
-    // 查看报告详情
-    viewReportDetail(report) {
-      this.currentReport = { ...report };
-      this.$refs.detailModal.open();
-    },
-    // 编辑报告
-    editReport() {
-      this.isEditing = true;
-      this.reportForm = { ...this.currentReport };
-      this.closeDetailModal();
-      this.$refs.reportModal.open();
+    // 重置表单
+    resetForm() {
+      this.reportForm = {
+        id: "",
+        title: "",
+        date: "2025-06-19",
+        content: "",
+        plan: "",
+        problems: ""
+      };
     },
     // 获取状态样式类
     getStatusClass(status) {
@@ -209,238 +478,124 @@ const _sfc_main = {
       const date = new Date(dateString);
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
     },
-    // 选择头像
-    async chooseAvatar() {
-      try {
-        const platform = common_vendor.index.getSystemInfoSync().platform;
-        common_vendor.index.__f__("log", "at pages/like/like.vue:418", "当前运行平台:", platform);
-        if (platform === "devtools" || platform === "mp-weixin") {
-          this.chooseImageInMiniProgram();
-        } else {
-          this.chooseImageInH5();
-        }
-      } catch (error) {
-        common_vendor.index.__f__("error", "at pages/like/like.vue:429", "头像选择失败:", error);
-        common_vendor.index.showToast({
-          title: "头像选择失败",
-          icon: "none"
-        });
-      }
-    },
-    // 小程序环境下的头像选择
-    chooseImageInMiniProgram() {
-      if (!common_vendor.index.chooseImage) {
-        common_vendor.index.showToast({
-          title: "当前环境不支持头像选择",
-          icon: "none"
-        });
-        return;
-      }
-      common_vendor.index.chooseImage({
-        count: 1,
-        sizeType: ["compressed"],
-        sourceType: ["album", "camera"],
-        success: async (res) => {
-          try {
-            common_vendor.index.__f__("log", "at pages/like/like.vue:453", "选择头像成功:", res);
-            const tempFilePath = res.tempFilePaths[0];
-            common_vendor.index.showLoading({ title: "上传头像中..." });
-            const uploadResult = await this.uploadAvatar(tempFilePath);
-            if (uploadResult) {
-              this.userInfo.avatarUrl = uploadResult;
-              common_vendor.index.setStorageSync("userInfo", this.userInfo);
-              await this.updateUserInfo({ avatarUrl: this.userInfo.avatarUrl });
-              common_vendor.index.showToast({
-                title: "头像更新成功",
-                icon: "success"
-              });
-            }
-          } catch (error) {
-            common_vendor.index.__f__("error", "at pages/like/like.vue:477", "处理头像失败:", error);
-            common_vendor.index.showToast({
-              title: "头像处理失败",
-              icon: "none"
-            });
-          } finally {
-            common_vendor.index.hideLoading();
-          }
-        },
-        fail: (error) => {
-          common_vendor.index.__f__("error", "at pages/like/like.vue:487", "选择头像失败:", error);
-          if (error.errMsg && error.errMsg.includes("cancel")) {
-            return;
-          }
-          common_vendor.index.showToast({
-            title: "选择头像失败",
-            icon: "none"
-          });
-        }
-      });
-    },
-    // H5环境下的头像选择
-    chooseImageInH5() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.style.display = "none";
-      input.onchange = async (event) => {
-        try {
-          const file = event.target.files[0];
-          if (!file)
-            return;
-          common_vendor.index.__f__("log", "at pages/like/like.vue:514", "H5选择头像成功:", file);
-          if (file.size > 5 * 1024 * 1024) {
-            common_vendor.index.showToast({
-              title: "图片大小不能超过5MB",
-              icon: "none"
-            });
-            return;
-          }
-          if (!file.type.startsWith("image/")) {
-            common_vendor.index.showToast({
-              title: "请选择图片文件",
-              icon: "none"
-            });
-            return;
-          }
-          common_vendor.index.showLoading({ title: "处理头像中..." });
-          const tempFilePath = URL.createObjectURL(file);
-          const uploadResult = await this.uploadAvatarInH5(file);
-          if (uploadResult) {
-            this.userInfo.avatarUrl = uploadResult;
-            common_vendor.index.setStorageSync("userInfo", this.userInfo);
-            await this.updateUserInfo({ avatarUrl: this.userInfo.avatarUrl });
-            common_vendor.index.showToast({
-              title: "头像更新成功",
-              icon: "success"
-            });
-          }
-          URL.revokeObjectURL(tempFilePath);
-        } catch (error) {
-          common_vendor.index.__f__("error", "at pages/like/like.vue:562", "H5头像处理失败:", error);
-          common_vendor.index.showToast({
-            title: "头像处理失败",
-            icon: "none"
-          });
-        } finally {
-          common_vendor.index.hideLoading();
-        }
-      };
-      document.body.appendChild(input);
-      input.click();
-      setTimeout(() => {
-        document.body.removeChild(input);
-      }, 1e3);
-    },
-    // H5环境下的头像上传
-    async uploadAvatarInH5(file) {
-      try {
-        common_vendor.index.__f__("log", "at pages/like/like.vue:585", "H5头像上传开始:", file);
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substring(2, 11);
-        const fileName = `avatar_${this.userInfo.userId}_${timestamp}_${random}.jpg`;
-        const mockUrl = `data:${file.type};base64,${await this.fileToBase64(file)}`;
-        common_vendor.index.__f__("log", "at pages/like/like.vue:596", "H5头像上传完成，生成模拟URL");
-        return mockUrl;
-      } catch (error) {
-        common_vendor.index.__f__("error", "at pages/like/like.vue:600", "H5头像上传失败:", error);
-        throw error;
-      }
-    },
-    // 文件转Base64
-    fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = reader.result.split(",")[1];
-          resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+    // 格式化相对日期
+    formatRelativeDate(dateString) {
+      if (!dateString)
+        return "";
+      const date = new Date(dateString);
+      const now = /* @__PURE__ */ new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1e3 * 60 * 60 * 24));
+      if (diffDays === 1)
+        return `${this.formatDate(dateString).split(" ")[0]} 今天`;
+      if (diffDays === 2)
+        return `${this.formatDate(dateString).split(" ")[0]} 昨天`;
+      if (diffDays <= 7)
+        return `${this.formatDate(dateString).split(" ")[0]} ${diffDays}天前`;
+      return this.formatDate(dateString);
     }
   }
 };
-if (!Array) {
-  const _component_uni_popup = common_vendor.resolveComponent("uni-popup");
-  _component_uni_popup();
-}
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
-    a: common_vendor.o((...args) => $options.showNewReportModal && $options.showNewReportModal(...args)),
-    b: common_vendor.t($data.reportList.length),
-    c: $data.reportList.length > 0
-  }, $data.reportList.length > 0 ? {
-    d: common_vendor.f($data.reportList, (report, index, i0) => {
+    a: $data.activeTab === "new" ? 1 : "",
+    b: common_vendor.o(($event) => $options.switchTab("new")),
+    c: $data.activeTab === "history" ? 1 : "",
+    d: common_vendor.o(($event) => $options.switchTab("history")),
+    e: $data.activeTab === "new"
+  }, $data.activeTab === "new" ? {
+    f: !$data.reportForm.title || $data.reportForm.title.trim().length < 2 ? "请输入报告标题" : "",
+    g: $data.reportForm.title,
+    h: common_vendor.o(($event) => $data.reportForm.title = $event.detail.value),
+    i: $data.reportForm.date || "",
+    j: common_vendor.o((...args) => $options.showDatePicker && $options.showDatePicker(...args)),
+    k: common_vendor.t($data.reportForm.date || "空"),
+    l: !$data.reportForm.content || $data.reportForm.content.trim().length < 5 ? "请输入工作内容" : "",
+    m: $data.reportForm.content,
+    n: common_vendor.o(($event) => $data.reportForm.content = $event.detail.value),
+    o: !$data.reportForm.plan || $data.reportForm.plan.trim().length < 5 ? "请输入下周工作计划" : "",
+    p: $data.reportForm.plan,
+    q: common_vendor.o(($event) => $data.reportForm.plan = $event.detail.value),
+    r: !$data.reportForm.problems || $data.reportForm.problems.trim().length < 5 ? "请输入遇到的问题(选填)" : "",
+    s: $data.reportForm.problems,
+    t: common_vendor.o(($event) => $data.reportForm.problems = $event.detail.value),
+    v: common_vendor.o((...args) => $options.submitReport && $options.submitReport(...args))
+  } : {}, {
+    w: $data.activeTab === "history"
+  }, $data.activeTab === "history" ? common_vendor.e({
+    x: !$data.searchKeyword || $data.searchKeyword.trim().length < 2 ? "搜索报告标题或内容..." : "",
+    y: common_vendor.o([($event) => $data.searchKeyword = $event.detail.value, (...args) => $options.onSearchInput && $options.onSearchInput(...args)]),
+    z: $data.searchKeyword,
+    A: common_vendor.t($data.selectedCategory),
+    B: common_vendor.o((...args) => _ctx.showCategoryFilter && _ctx.showCategoryFilter(...args)),
+    C: common_vendor.t($data.selectedDateText),
+    D: common_vendor.o((...args) => $options.showHistoryDatePicker && $options.showHistoryDatePicker(...args)),
+    E: $data.searchKeyword
+  }, $data.searchKeyword ? {
+    F: common_vendor.o((...args) => $options.resetFilters && $options.resetFilters(...args))
+  } : {}, {
+    G: common_vendor.t($data.reportList.length),
+    H: common_vendor.t($options.approvedCount),
+    I: common_vendor.t($options.pendingCount),
+    J: $options.filteredReportList.length > 0
+  }, $options.filteredReportList.length > 0 ? {
+    K: common_vendor.f($options.filteredReportList, (report, index, i0) => {
       return common_vendor.e({
         a: common_vendor.t(report.title),
         b: common_vendor.t($options.getStatusText(report.status)),
         c: common_vendor.n($options.getStatusClass(report.status)),
-        d: common_vendor.t($options.formatDate(report.createTime)),
+        d: common_vendor.t($options.formatRelativeDate(report.createTime)),
         e: common_vendor.t(report.author),
-        f: common_vendor.t(report.summary),
-        g: report.leaderComment
-      }, report.leaderComment ? {
-        h: common_vendor.t(report.leaderComment)
-      } : {}, {
-        i: report.id,
-        j: common_vendor.o(($event) => $options.viewReportDetail(report), report.id)
+        f: common_vendor.t(report.content.substring(0, 50)),
+        g: report.plan
+      }, report.plan ? {} : {}, {
+        h: report.problems
+      }, report.problems ? {} : {}, {
+        i: report.leaderComment
+      }, report.leaderComment ? {} : {}, {
+        j: report.id,
+        k: common_vendor.o(($event) => $options.viewReportDetail(report), report.id)
       });
     })
+  } : {}) : {}, {
+    L: $data.showDatePickerModal
+  }, $data.showDatePickerModal ? {
+    M: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
+    N: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
+    O: common_vendor.t($data.selectedYear),
+    P: $data.yearIndex,
+    Q: $data.years,
+    R: common_vendor.o((...args) => $options.onYearChange && $options.onYearChange(...args)),
+    S: common_vendor.t($data.selectedMonth),
+    T: $data.monthIndex,
+    U: $data.months,
+    V: common_vendor.o((...args) => $options.onMonthChange && $options.onMonthChange(...args)),
+    W: common_vendor.t($data.selectedDay),
+    X: $data.dayIndex,
+    Y: $data.days,
+    Z: common_vendor.o((...args) => $options.onDayChange && $options.onDayChange(...args)),
+    aa: common_vendor.o((...args) => $options.closeDatePicker && $options.closeDatePicker(...args)),
+    ab: common_vendor.o((...args) => $options.confirmDatePicker && $options.confirmDatePicker(...args))
   } : {}, {
-    e: common_vendor.t($data.isEditing ? "编辑报告" : "新建报告"),
-    f: common_vendor.o((...args) => $options.closeReportModal && $options.closeReportModal(...args)),
-    g: $data.reportForm.title,
-    h: common_vendor.o(($event) => $data.reportForm.title = $event.detail.value),
-    i: -1,
-    j: $data.reportForm.content,
-    k: common_vendor.o(($event) => $data.reportForm.content = $event.detail.value),
-    l: common_vendor.t($data.reportForm.content.length),
-    m: -1,
-    n: $data.reportForm.summary,
-    o: common_vendor.o(($event) => $data.reportForm.summary = $event.detail.value),
-    p: common_vendor.t($data.reportForm.summary.length),
-    q: -1,
-    r: $data.reportForm.nextPlan,
-    s: common_vendor.o(($event) => $data.reportForm.nextPlan = $event.detail.value),
-    t: common_vendor.t($data.reportForm.nextPlan.length),
-    v: common_vendor.o((...args) => $options.closeReportModal && $options.closeReportModal(...args)),
-    w: common_vendor.o((...args) => $options.saveReport && $options.saveReport(...args)),
-    x: !$options.isFormValid,
-    y: common_vendor.sr("reportModal", "622f803e-0"),
-    z: common_vendor.p({
-      type: "center",
-      ["mask-click"]: false
-    }),
-    A: common_vendor.o((...args) => $options.closeDetailModal && $options.closeDetailModal(...args)),
-    B: common_vendor.t($data.currentReport.title),
-    C: common_vendor.t($options.formatDate($data.currentReport.createTime)),
-    D: common_vendor.t($data.currentReport.author),
-    E: common_vendor.t($data.currentReport.content),
-    F: $data.currentReport.summary
-  }, $data.currentReport.summary ? {
-    G: common_vendor.t($data.currentReport.summary)
-  } : {}, {
-    H: $data.currentReport.nextPlan
-  }, $data.currentReport.nextPlan ? {
-    I: common_vendor.t($data.currentReport.nextPlan)
-  } : {}, {
-    J: $data.currentReport.leaderComment
-  }, $data.currentReport.leaderComment ? {
-    K: common_vendor.t($data.currentReport.leaderComment),
-    L: common_vendor.t($options.formatDate($data.currentReport.commentTime))
-  } : {}, {
-    M: $data.currentReport.status === "draft"
-  }, $data.currentReport.status === "draft" ? {
-    N: common_vendor.o((...args) => $options.editReport && $options.editReport(...args))
-  } : {}, {
-    O: common_vendor.o((...args) => $options.closeDetailModal && $options.closeDetailModal(...args)),
-    P: common_vendor.sr("detailModal", "622f803e-1"),
-    Q: common_vendor.p({
-      type: "center",
-      ["mask-click"]: false
-    })
-  });
+    ac: $data.showHistoryDatePickerModal
+  }, $data.showHistoryDatePickerModal ? {
+    ad: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
+    ae: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
+    af: common_vendor.t($data.historySelectedYear),
+    ag: $data.historyYearIndex,
+    ah: $data.historyYears,
+    ai: common_vendor.o((...args) => $options.onHistoryYearChange && $options.onHistoryYearChange(...args)),
+    aj: common_vendor.t($data.historySelectedMonth),
+    ak: $data.historyMonthIndex,
+    al: $data.historyMonths,
+    am: common_vendor.o((...args) => $options.onHistoryMonthChange && $options.onHistoryMonthChange(...args)),
+    an: common_vendor.t($data.historySelectedDay),
+    ao: $data.historyDayIndex,
+    ap: $data.historyDays,
+    aq: common_vendor.o((...args) => $options.onHistoryDayChange && $options.onHistoryDayChange(...args)),
+    ar: common_vendor.o((...args) => $options.closeHistoryDatePicker && $options.closeHistoryDatePicker(...args)),
+    as: common_vendor.o((...args) => $options.confirmHistoryDatePicker && $options.confirmHistoryDatePicker(...args))
+  } : {});
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render]]);
 wx.createPage(MiniProgramPage);

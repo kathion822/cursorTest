@@ -6999,9 +6999,9 @@ function isConsoleWritable() {
   return isWritable;
 }
 function initRuntimeSocketService() {
-  const hosts = "127.0.0.1,10.12.3.128,10.10.14.67";
+  const hosts = "127.0.0.1,10.12.3.128,10.10.14.58";
   const port = "8090";
-  const id = "mp-weixin_isvJZt";
+  const id = "mp-weixin_ocmYN8";
   const lazy = typeof swan !== "undefined";
   let restoreError = lazy ? () => {
   } : initOnError();
@@ -7957,7 +7957,7 @@ const pages = [
   {
     path: "pages/like/like",
     style: {
-      navigationBarTitleText: "工作报告"
+      navigationBarTitleText: "主页"
     }
   },
   {
@@ -8349,7 +8349,7 @@ class S {
 function T(e2) {
   return e2 && "string" == typeof e2 ? JSON.parse(e2) : e2;
 }
-const b = true, E = "mp-weixin", A = T(define_process_env_UNI_SECURE_NETWORK_CONFIG_default), P = E, C = T('{"address":["127.0.0.1","10.12.3.128","10.10.14.67"],"servePort":7001,"debugPort":9000,"initialLaunchType":"remote","skipFiles":["<node_internals>/**","/Applications/HBuilderX.app/Contents/HBuilderX/plugins/unicloud/**/*.js"]}'), O = T('[{"provider":"aliyun","spaceName":"daomeng-space","spaceId":"mp-184d69bf-2524-4804-9ccf-ce55c71fdb28","clientSecret":"7CZDmvRAtI8vvV6WURx76w==","endpoint":"https://api.next.bspapp.com"}]') || [];
+const b = true, E = "mp-weixin", A = T(define_process_env_UNI_SECURE_NETWORK_CONFIG_default), P = E, C = T('{"address":["127.0.0.1","10.12.3.128","10.10.14.58"],"servePort":7001,"debugPort":9000,"initialLaunchType":"remote","skipFiles":["<node_internals>/**","/Applications/HBuilderX.app/Contents/HBuilderX/plugins/unicloud/**/*.js"]}'), O = T('[{"provider":"aliyun","spaceName":"daomeng-space","spaceId":"mp-184d69bf-2524-4804-9ccf-ce55c71fdb28","clientSecret":"7CZDmvRAtI8vvV6WURx76w==","endpoint":"https://api.next.bspapp.com"}]') || [];
 let N = "";
 try {
   N = "__UNI__F0B858E";
