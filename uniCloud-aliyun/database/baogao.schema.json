@@ -1,0 +1,113 @@
+{
+	"bsonType": "object",
+	"required": ["uid", "title", "date", "content", "status"],
+	"permission": {
+		"read": "doc.uid == auth.uid",
+		"create": "auth.uid != null",
+		"update": "doc.uid == auth.uid",
+		"delete": "doc.uid == auth.uid"
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"uid": {
+				"bsonType": "string",
+	"description": "uni-id用户唯一标识符，关联用户表",
+	"title": "uni-id用户ID"
+		},
+		"title": {
+			"bsonType": "string",
+			"description": "报告标题",
+			"title": "报告标题",
+			"maxLength": 100
+		},
+		"date": {
+			"bsonType": "string",
+			"description": "报告日期，格式：YYYY-MM-DD",
+			"title": "报告日期",
+			"pattern": "^(\\d{4})-(\\d{2})-(\\d{2})$"
+		},
+		"content": {
+			"bsonType": "string",
+			"description": "工作内容",
+			"title": "工作内容",
+			"maxLength": 2000
+		},
+		"plan": {
+			"bsonType": "string",
+			"description": "工作计划",
+			"title": "工作计划",
+			"maxLength": 1000
+		},
+		"problems": {
+			"bsonType": "string",
+			"description": "遇到的问题",
+			"title": "遇到的问题",
+			"maxLength": 500
+		},
+		"status": {
+			"bsonType": "string",
+			"description": "报告状态：draft-草稿，pending-待审批，approved-已通过，rejected-驳回",
+			"title": "报告状态",
+			"enum": ["draft", "pending", "approved", "rejected"]
+		},
+		"leaderComment": {
+			"bsonType": "string",
+			"description": "领导批语",
+			"title": "领导批语",
+			"maxLength": 500
+		},
+		"createTime": {
+			"bsonType": "date",
+			"description": "创建时间",
+			"title": "创建时间"
+		},
+		"updateTime": {
+			"bsonType": "date",
+			"description": "更新时间",
+			"title": "更新时间"
+		}
+	},
+	"indexes": [
+		{
+			"IndexName": "uid_status_index",
+			"MgoKeySchema": {
+				"MgoIndexKeys": [{
+					"Name": "uid",
+					"Direction": "1"
+				}, {
+					"Name": "status",
+					"Direction": "1"
+				}],
+				"MgoIsUnique": false
+			}
+		},
+		{
+			"IndexName": "uid_date_index",
+			"MgoKeySchema": {
+				"MgoIndexKeys": [{
+					"Name": "uid",
+					"Direction": "1"
+				}, {
+					"Name": "date",
+					"Direction": "-1"
+				}],
+				"MgoIsUnique": false
+			}
+		},
+		{
+			"IndexName": "uid_createTime_index",
+			"MgoKeySchema": {
+				"MgoIndexKeys": [{
+					"Name": "uid",
+					"Direction": "1"
+				}, {
+					"Name": "createTime",
+					"Direction": "-1"
+				}],
+				"MgoIsUnique": false
+			}
+		}
+	]
+}

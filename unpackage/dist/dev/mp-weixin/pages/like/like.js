@@ -48,48 +48,7 @@ const _sfc_main = {
         content: "",
         plan: "",
         problems: ""
-      },
-      // 模拟数据
-      mockReports: [
-        {
-          id: "1",
-          title: "第一周工作报告",
-          content: "本周完成了项目需求分析和原型设计,与客户进行了多次沟通确认需求细节。通过深入分析用户需求，制定了详细的功能规划和技术方案。",
-          plan: "下周进行功能测试，修复发现的bug，准备部署上线。",
-          problems: "遇到了一些技术难点，已通过查阅资料和团队讨论解决。",
-          summary: "项目需求分析完成，原型设计通过客户确认。",
-          author: "张三",
-          status: "approved",
-          createTime: "2023-05-01 14:30:00",
-          date: "2023-05-01",
-          leaderComment: "需求分析很详细，原型设计符合预期。"
-        },
-        {
-          id: "2",
-          title: "第二周工作报告",
-          content: "本周完成了首页和用户中心的开发,实现了基本的页面布局和交互功能。页面响应式设计良好，用户体验流畅。",
-          plan: "下月重点推进新项目立项，优化项目管理流程，提升团队技能。",
-          problems: "项目交付时间紧张，通过加班和优化流程解决。",
-          summary: "首页和用户中心开发完成，页面布局和交互功能实现。",
-          author: "李四",
-          status: "approved",
-          createTime: "2023-05-08 16:45:00",
-          date: "2023-05-08",
-          leaderComment: "开发进度良好，页面设计美观。"
-        },
-        {
-          id: "3",
-          title: "第三周工作报告",
-          content: "针对新技术的应用进行了深入调研，分析了技术优势、适用场景和潜在风险。通过对比分析，推荐采用新技术方案。",
-          plan: "制定技术迁移计划，进行小规模试点，评估实际效果。",
-          problems: "新技术学习曲线较陡，需要更多培训时间。",
-          summary: "新技术调研完成，推荐采用，预计性能提升30%以上。",
-          author: "王五",
-          status: "pending",
-          createTime: "2023-05-12 11:20:00",
-          date: "2023-05-12"
-        }
-      ]
+      }
     };
   },
   computed: {
@@ -151,16 +110,18 @@ const _sfc_main = {
   mounted() {
     try {
       const systemInfo = common_vendor.index.getSystemInfoSync();
-      common_vendor.index.__f__("log", "at pages/like/like.vue:545", "系统信息:", systemInfo);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:546", "运行平台:", systemInfo.platform);
-      common_vendor.index.__f__("log", "at pages/like/like.vue:547", "运行环境:", systemInfo.uniPlatform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:505", "系统信息:", systemInfo);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:506", "运行平台:", systemInfo.platform);
+      common_vendor.index.__f__("log", "at pages/like/like.vue:507", "运行环境:", systemInfo.uniPlatform);
     } catch (error) {
-      common_vendor.index.__f__("warn", "at pages/like/like.vue:549", "获取系统信息失败:", error);
+      common_vendor.index.__f__("warn", "at pages/like/like.vue:509", "获取系统信息失败:", error);
     }
+    const loginStatus = this.checkLoginStatus();
+    common_vendor.index.__f__("log", "at pages/like/like.vue:514", "页面加载时的登录状态:", loginStatus);
     this.initDatePicker();
     this.loadReportList();
     {
-      common_vendor.index.__f__("log", "at pages/like/like.vue:560", "开发环境：忽略WebSocket连接错误");
+      common_vendor.index.__f__("log", "at pages/like/like.vue:524", "开发环境：忽略WebSocket连接错误");
     }
   },
   methods: {
@@ -426,15 +387,8 @@ const _sfc_main = {
     // 搜索输入
     onSearchInput() {
     },
-    // 查看报告详情
-    viewReportDetail(report) {
-      common_vendor.index.showToast({
-        title: "查看详情功能开发中",
-        icon: "none"
-      });
-    },
     // 提交报告
-    submitReport() {
+    async submitReport() {
       if (!this.reportForm.title.trim() || !this.reportForm.content.trim()) {
         common_vendor.index.showToast({
           title: "请填写必填项",
@@ -442,53 +396,142 @@ const _sfc_main = {
         });
         return;
       }
-      const newReport = {
-        id: Date.now().toString(),
-        title: this.reportForm.title,
-        content: this.reportForm.content,
-        plan: this.reportForm.plan,
-        problems: this.reportForm.problems,
-        summary: this.reportForm.content.substring(0, 100) + "...",
-        author: "当前用户",
-        status: "draft",
-        createTime: (/* @__PURE__ */ new Date()).toISOString(),
-        date: this.reportForm.date
-      };
-      this.reportList.unshift(newReport);
       try {
-        common_vendor.index.setStorageSync("workReports", this.reportList);
-      } catch (error) {
-        common_vendor.index.__f__("warn", "at pages/like/like.vue:967", "本地存储失败:", error);
-      }
-      this.resetForm();
-      this.activeTab = "history";
-      common_vendor.index.showToast({
-        title: "报告提交成功",
-        icon: "success"
-      });
-    },
-    // 加载报告列表
-    loadReportList() {
-      try {
-        const storedReports = common_vendor.index.getStorageSync("workReports");
-        if (storedReports && Array.isArray(storedReports)) {
-          this.reportList = storedReports;
-          common_vendor.index.__f__("log", "at pages/like/like.vue:989", "从本地存储加载报告:", this.reportList.length);
+        common_vendor.index.showLoading({
+          title: "提交中..."
+        });
+        const token = common_vendor.index.getStorageSync("token");
+        const uid = common_vendor.index.getStorageSync("uid");
+        common_vendor.index.__f__("log", "at pages/like/like.vue:913", "获取到的token:", token, "uid:", uid);
+        if (!token || !uid) {
+          common_vendor.index.hideLoading();
+          common_vendor.index.__f__("log", "at pages/like/like.vue:917", "token或uid为空，提示用户登录");
+          common_vendor.index.showToast({
+            title: "请先登录",
+            icon: "none"
+          });
+          return;
+        }
+        const result = await common_vendor.tr.callFunction({
+          name: "work-report-manager-func",
+          data: {
+            method: "addWorkReport",
+            token,
+            title: this.reportForm.title,
+            content: this.reportForm.content,
+            plan: this.reportForm.plan,
+            problems: this.reportForm.problems,
+            date: this.reportForm.date
+          }
+        });
+        common_vendor.index.hideLoading();
+        const response = result.result;
+        common_vendor.index.__f__("log", "at pages/like/like.vue:943", "云函数返回结果:", response);
+        if (response && response.code === 0) {
+          common_vendor.index.showToast({
+            title: "报告提交成功",
+            icon: "success"
+          });
+          this.resetForm();
+          this.activeTab = "history";
+          this.loadReportList();
         } else {
-          this.reportList = [...this.mockReports];
-          common_vendor.index.__f__("log", "at pages/like/like.vue:993", "使用模拟数据:", this.reportList.length);
+          common_vendor.index.showToast({
+            title: response && response.message || "提交失败",
+            icon: "none"
+          });
         }
       } catch (error) {
-        common_vendor.index.__f__("warn", "at pages/like/like.vue:996", "加载本地数据失败，使用模拟数据:", error);
-        this.reportList = [...this.mockReports];
+        common_vendor.index.hideLoading();
+        common_vendor.index.__f__("error", "at pages/like/like.vue:968", "提交报告失败:", error);
+        common_vendor.index.showToast({
+          title: "提交失败，请重试",
+          icon: "none"
+        });
       }
+    },
+    // 加载报告列表
+    async loadReportList() {
+      try {
+        common_vendor.index.showLoading({
+          title: "加载中..."
+        });
+        const token = common_vendor.index.getStorageSync("token");
+        const uid = common_vendor.index.getStorageSync("uid");
+        common_vendor.index.__f__("log", "at pages/like/like.vue:987", "加载报告列表 - 获取到的token:", token, "uid:", uid);
+        if (!token || !uid) {
+          common_vendor.index.hideLoading();
+          common_vendor.index.__f__("log", "at pages/like/like.vue:991", "加载报告列表 - token或uid为空，清空列表");
+          this.reportList = [];
+          return;
+        }
+        const result = await common_vendor.tr.callFunction({
+          name: "work-report-manager-func",
+          data: {
+            method: "getWorkReports",
+            token,
+            page: 1,
+            pageSize: 50
+          }
+        });
+        common_vendor.index.hideLoading();
+        if (result.code === 0) {
+          this.reportList = result.data.list || [];
+          common_vendor.index.__f__("log", "at pages/like/like.vue:1013", "从云数据库加载报告:", this.reportList.length);
+        } else {
+          common_vendor.index.__f__("warn", "at pages/like/like.vue:1016", "加载报告列表失败:", result.message);
+          this.reportList = [];
+          common_vendor.index.showToast({
+            title: result.message || "加载失败",
+            icon: "none"
+          });
+        }
+      } catch (error) {
+        common_vendor.index.hideLoading();
+        common_vendor.index.__f__("error", "at pages/like/like.vue:1025", "加载报告列表失败:", error);
+        this.reportList = [];
+        common_vendor.index.showToast({
+          title: "加载失败，请重试",
+          icon: "none"
+        });
+      }
+    },
+    // 检查用户登录状态
+    checkLoginStatus() {
+      const token = common_vendor.index.getStorageSync("token");
+      const userInfo = common_vendor.index.getStorageSync("userInfo");
+      const uid = common_vendor.index.getStorageSync("uid");
+      common_vendor.index.__f__("log", "at pages/like/like.vue:1041", "检查登录状态:", { token: !!token, userInfo: !!userInfo, uid: !!uid });
+      if (token && this.isTokenExpired(token)) {
+        common_vendor.index.__f__("log", "at pages/like/like.vue:1045", "token已过期，清除登录信息");
+        this.clearLoginInfo();
+        return { isLoggedIn: false, token: null, userInfo: null, uid: null };
+      }
+      return { isLoggedIn: !!token, token, userInfo, uid };
+    },
+    // 检查token是否过期
+    isTokenExpired(token) {
+      try {
+        return !token || token.length < 10;
+      } catch (error) {
+        common_vendor.index.__f__("error", "at pages/like/like.vue:1060", "检查token过期失败:", error);
+        return true;
+      }
+    },
+    // 清除登录信息
+    clearLoginInfo() {
+      common_vendor.index.removeStorageSync("token");
+      common_vendor.index.removeStorageSync("userInfo");
+      common_vendor.index.removeStorageSync("uid");
+      common_vendor.index.removeStorageSync("loginType");
+      common_vendor.index.__f__("log", "at pages/like/like.vue:1071", "登录信息已清除");
     },
     // 重置表单
     resetForm() {
       this.reportForm = {
         id: "",
         title: "",
-        date: "2025-06-19",
+        date: "",
         content: "",
         plan: "",
         problems: ""
@@ -586,16 +629,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         b: common_vendor.t($options.getStatusText(report.status)),
         c: common_vendor.n($options.getStatusClass(report.status)),
         d: common_vendor.t($options.formatRelativeDate(report.createTime)),
-        e: common_vendor.t(report.author),
-        f: common_vendor.t(report.content.substring(0, 50)),
-        g: report.plan
+        e: common_vendor.t(report.content.substring(0, 50)),
+        f: report.plan
       }, report.plan ? {} : {}, {
-        h: report.problems
+        g: report.problems
       }, report.problems ? {} : {}, {
-        i: report.leaderComment
+        h: report.leaderComment
       }, report.leaderComment ? {} : {}, {
-        j: report.id,
-        k: common_vendor.o(($event) => $options.viewReportDetail(report), report.id)
+        i: report.id,
+        j: common_vendor.o(($event) => $options.viewReportDetail(report), report.id)
       });
     })
   } : {}) : {}, {

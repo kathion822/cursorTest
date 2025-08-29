@@ -350,8 +350,9 @@ const _sfc_main = {
         if (result.result && result.result.code === 0) {
           common_vendor.index.setStorageSync("userInfo", result.result.userInfo);
           common_vendor.index.setStorageSync("token", result.result.token);
+          common_vendor.index.setStorageSync("uid", result.result.userInfo.uid);
           common_vendor.index.setStorageSync("loginType", loginType);
-          common_vendor.index.__f__("log", "at pages/login/login.vue:526", "登录信息已保存到本地存储");
+          common_vendor.index.__f__("log", "at pages/login/login.vue:527", "登录信息已保存到本地存储");
           common_vendor.index.showToast({
             title: "登录成功",
             icon: "success"
@@ -359,7 +360,7 @@ const _sfc_main = {
           return true;
         } else {
           const errorMsg = result.result ? result.result.message : "登录失败";
-          common_vendor.index.__f__("error", "at pages/login/login.vue:536", "统一登录失败:", errorMsg);
+          common_vendor.index.__f__("error", "at pages/login/login.vue:537", "统一登录失败:", errorMsg);
           common_vendor.index.showToast({
             title: errorMsg || "登录失败",
             icon: "none"
@@ -367,7 +368,7 @@ const _sfc_main = {
           return false;
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/login/login.vue:544", "统一登录处理失败:", error);
+        common_vendor.index.__f__("error", "at pages/login/login.vue:545", "统一登录处理失败:", error);
         common_vendor.index.showToast({
           title: "登录失败，请重试",
           icon: "none"
@@ -377,27 +378,27 @@ const _sfc_main = {
     },
     // 测试跳转方法
     testJump() {
-      common_vendor.index.__f__("log", "at pages/login/login.vue:555", "测试跳转方法被调用");
+      common_vendor.index.__f__("log", "at pages/login/login.vue:556", "测试跳转方法被调用");
       common_vendor.index.showToast({
         title: "测试跳转",
         icon: "none"
       });
       setTimeout(() => {
-        common_vendor.index.__f__("log", "at pages/login/login.vue:563", "准备跳转到个人资料页");
+        common_vendor.index.__f__("log", "at pages/login/login.vue:564", "准备跳转到个人资料页");
         common_vendor.index.redirectTo({
           url: "/pages/profile/profile",
           success: () => {
-            common_vendor.index.__f__("log", "at pages/login/login.vue:567", "跳转成功");
+            common_vendor.index.__f__("log", "at pages/login/login.vue:568", "跳转成功");
           },
           fail: (err) => {
-            common_vendor.index.__f__("error", "at pages/login/login.vue:570", "跳转失败:", err);
+            common_vendor.index.__f__("error", "at pages/login/login.vue:571", "跳转失败:", err);
             common_vendor.index.navigateTo({
               url: "/pages/profile/profile",
               success: () => {
-                common_vendor.index.__f__("log", "at pages/login/login.vue:575", "navigateTo成功");
+                common_vendor.index.__f__("log", "at pages/login/login.vue:576", "navigateTo成功");
               },
               fail: (err2) => {
-                common_vendor.index.__f__("error", "at pages/login/login.vue:578", "navigateTo也失败:", err2);
+                common_vendor.index.__f__("error", "at pages/login/login.vue:579", "navigateTo也失败:", err2);
                 common_vendor.index.showToast({
                   title: "页面跳转失败",
                   icon: "none"

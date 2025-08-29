@@ -136,7 +136,7 @@
 					</view>
 					<view class="report-info">
 						<text class="report-date">{{ formatRelativeDate(report.createTime) }}</text>
-						<text class="report-author">{{ report.author }}</text>
+						<text class="report-author">当前用户</text>
 					</view>
 					<view class="report-summary">
 						<text class="summary-text">{{ report.content.substring(0, 50) }}...</text>
@@ -417,47 +417,7 @@ export default {
 			},
 
 			
-			// 模拟数据
-			mockReports: [
-				{
-					id: '1',
-					title: '第一周工作报告',
-					content: '本周完成了项目需求分析和原型设计,与客户进行了多次沟通确认需求细节。通过深入分析用户需求，制定了详细的功能规划和技术方案。',
-					plan: '下周进行功能测试，修复发现的bug，准备部署上线。',
-					problems: '遇到了一些技术难点，已通过查阅资料和团队讨论解决。',
-					summary: '项目需求分析完成，原型设计通过客户确认。',
-					author: '张三',
-					status: 'approved',
-					createTime: '2023-05-01 14:30:00',
-					date: '2023-05-01',
-					leaderComment: '需求分析很详细，原型设计符合预期。'
-				},
-				{
-					id: '2',
-					title: '第二周工作报告',
-					content: '本周完成了首页和用户中心的开发,实现了基本的页面布局和交互功能。页面响应式设计良好，用户体验流畅。',
-					plan: '下月重点推进新项目立项，优化项目管理流程，提升团队技能。',
-					problems: '项目交付时间紧张，通过加班和优化流程解决。',
-					summary: '首页和用户中心开发完成，页面布局和交互功能实现。',
-					author: '李四',
-					status: 'approved',
-					createTime: '2023-05-08 16:45:00',
-					date: '2023-05-08',
-					leaderComment: '开发进度良好，页面设计美观。'
-				},
-				{
-					id: '3',
-					title: '第三周工作报告',
-					content: '针对新技术的应用进行了深入调研，分析了技术优势、适用场景和潜在风险。通过对比分析，推荐采用新技术方案。',
-					plan: '制定技术迁移计划，进行小规模试点，评估实际效果。',
-					problems: '新技术学习曲线较陡，需要更多培训时间。',
-					summary: '新技术调研完成，推荐采用，预计性能提升30%以上。',
-					author: '王五',
-					status: 'pending',
-					createTime: '2023-05-12 11:20:00',
-					date: '2023-05-12'
-				}
-			]
+
 		};
 	},
 	
@@ -548,6 +508,10 @@ export default {
 		} catch (error) {
 			console.warn('获取系统信息失败:', error);
 		}
+		
+		// 检查登录状态
+		const loginStatus = this.checkLoginStatus();
+		console.log('页面加载时的登录状态:', loginStatus);
 		
 		// 初始化日期选择器
 		this.initDatePicker();
@@ -924,17 +888,10 @@ export default {
 			// 搜索逻辑已在计算属性中处理
 		},
 		
-		// 查看报告详情
-		viewReportDetail(report) {
-			// 这里可以跳转到详情页面或显示详情弹窗
-			uni.showToast({
-				title: '查看详情功能开发中',
-				icon: 'none'
-			});
-		},
+
 		
 		// 提交报告
-		submitReport() {
+		async submitReport() {
 			if (!this.reportForm.title.trim() || !this.reportForm.content.trim()) {
 				uni.showToast({
 					title: '请填写必填项',
@@ -944,69 +901,182 @@ export default {
 			}
 			
 					// 创建新报告
-					const newReport = {
-						id: Date.now().toString(),
-				title: this.reportForm.title,
-				content: this.reportForm.content,
-				plan: this.reportForm.plan,
-				problems: this.reportForm.problems,
-				summary: this.reportForm.content.substring(0, 100) + '...',
-						author: '当前用户',
-						status: 'draft',
-						createTime: new Date().toISOString(),
-				date: this.reportForm.date
-					};
-			
-			// 添加到报告列表
-					this.reportList.unshift(newReport);
-				
-			// 保存到本地存储
-				try {
-					uni.setStorageSync('workReports', this.reportList);
-			} catch (error) {
-				console.warn('本地存储失败:', error);
-			}
-			
-			// 重置表单
-			this.resetForm();
-			
-			// 切换到历史报告标签页
-			this.activeTab = 'history';
-				
-				uni.showToast({
-				title: '报告提交成功',
-					icon: 'success'
+			try {
+				// 显示加载提示
+				uni.showLoading({
+					title: '提交中...'
 				});
+				
+				// 获取用户token和uid
+				const token = uni.getStorageSync('token');
+				const uid = uni.getStorageSync('uid');
+				console.log('获取到的token:', token, 'uid:', uid);
+				
+				if (!token || !uid) {
+					uni.hideLoading();
+					console.log('token或uid为空，提示用户登录');
+					uni.showToast({
+						title: '请先登录',
+						icon: 'none'
+					});
+					return;
+				}
+				
+				// 调用云函数提交报告
+				const result = await uniCloud.callFunction({
+					name: 'work-report-manager-func',
+					data: {
+						method: 'addWorkReport',
+						token: token,
+						title: this.reportForm.title,
+						content: this.reportForm.content,
+						plan: this.reportForm.plan,
+						problems: this.reportForm.problems,
+						date: this.reportForm.date
+					}
+				});
+				
+				uni.hideLoading();
+				
+				// 云函数返回的结果在 result.result 中
+				const response = result.result;
+				console.log('云函数返回结果:', response);
+				
+				if (response && response.code === 0) {
+					// 提交成功
+					uni.showToast({
+						title: '报告提交成功',
+						icon: 'success'
+					});
+					
+					// 重置表单
+					this.resetForm();
+					
+					// 切换到历史报告标签页
+					this.activeTab = 'history';
+					
+					// 重新加载报告列表
+					this.loadReportList();
+				} else {
+					uni.showToast({
+						title: (response && response.message) || '提交失败',
+						icon: 'none'
+					});
+				}
+			} catch (error) {
+				uni.hideLoading();
+				console.error('提交报告失败:', error);
+				uni.showToast({
+					title: '提交失败，请重试',
+					icon: 'none'
+				});
+			}
 		},
 		
 		// 加载报告列表
-		loadReportList() {
+		async loadReportList() {
 			try {
-				// 尝试从本地存储加载数据
-				const storedReports = uni.getStorageSync('workReports');
-				if (storedReports && Array.isArray(storedReports)) {
-					this.reportList = storedReports;
-					console.log('从本地存储加载报告:', this.reportList.length);
+				// 显示加载提示
+				uni.showLoading({
+					title: '加载中...'
+				});
+				
+				// 获取用户token和uid
+				const token = uni.getStorageSync('token');
+				const uid = uni.getStorageSync('uid');
+				console.log('加载报告列表 - 获取到的token:', token, 'uid:', uid);
+				
+				if (!token || !uid) {
+					uni.hideLoading();
+					console.log('加载报告列表 - token或uid为空，清空列表');
+					// 如果没有token或uid，清空列表
+					this.reportList = [];
+					return;
+				}
+				
+				// 调用云函数获取报告列表
+				const result = await uniCloud.callFunction({
+					name: 'work-report-manager-func',
+					data: {
+						method: 'getWorkReports',
+						token: token,
+						page: 1,
+						pageSize: 50
+					}
+				});
+				
+				uni.hideLoading();
+				
+				if (result.code === 0) {
+					// 加载成功
+					this.reportList = result.data.list || [];
+					console.log('从云数据库加载报告:', this.reportList.length);
 				} else {
-					// 如果没有本地数据，使用模拟数据
-					this.reportList = [...this.mockReports];
-					console.log('使用模拟数据:', this.reportList.length);
+					// 加载失败
+					console.warn('加载报告列表失败:', result.message);
+					this.reportList = [];
+					uni.showToast({
+						title: result.message || '加载失败',
+						icon: 'none'
+					});
 				}
 			} catch (error) {
-				console.warn('加载本地数据失败，使用模拟数据:', error);
-				// 如果本地存储访问失败，使用模拟数据
-				this.reportList = [...this.mockReports];
+				uni.hideLoading();
+				console.error('加载报告列表失败:', error);
+				this.reportList = [];
+				uni.showToast({
+					title: '加载失败，请重试',
+					icon: 'none'
+				});
 			}
 		},
 		
 
+		
+		// 检查用户登录状态
+		checkLoginStatus() {
+			const token = uni.getStorageSync('token');
+			const userInfo = uni.getStorageSync('userInfo');
+			const uid = uni.getStorageSync('uid');
+			console.log('检查登录状态:', { token: !!token, userInfo: !!userInfo, uid: !!uid });
+			
+			// 检查token是否过期
+			if (token && this.isTokenExpired(token)) {
+				console.log('token已过期，清除登录信息');
+				this.clearLoginInfo();
+				return { isLoggedIn: false, token: null, userInfo: null, uid: null };
+			}
+			
+			return { isLoggedIn: !!token, token, userInfo, uid };
+		},
+		
+		// 检查token是否过期
+		isTokenExpired(token) {
+			try {
+				// 这里可以添加token过期检查逻辑
+				// 暂时简单检查token是否存在
+				return !token || token.length < 10;
+			} catch (error) {
+				console.error('检查token过期失败:', error);
+				return true;
+			}
+		},
+		
+		// 清除登录信息
+		clearLoginInfo() {
+			uni.removeStorageSync('token');
+			uni.removeStorageSync('userInfo');
+			uni.removeStorageSync('uid');
+			uni.removeStorageSync('loginType');
+			console.log('登录信息已清除');
+		},
 		
 		// 重置表单
 		resetForm() {
 			this.reportForm = {
 				id: '',
 				title: '',
-				date: '2025-06-19',
+				date: '',
 				content: '',
 				plan: '',
 				problems: ''

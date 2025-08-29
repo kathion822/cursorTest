@@ -1,6 +1,6 @@
 {
 	"bsonType": "object",
-	"required": ["userId"],
+	"required": ["uid"],
 	"permission": {
 		"read": "auth.uid != null",
 		"create": "auth.uid != null",
@@ -11,9 +11,14 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
+		"uid": {
+			"bsonType": "string",
+			"description": "uni-id用户唯一标识符",
+			"title": "uni-id用户ID"
+		},
 		"userId": {
 			"bsonType": "string",
-			"description": "统一用户ID",
+			"description": "统一用户ID（兼容性字段）",
 			"title": "统一用户ID"
 		},
 		"openid": {

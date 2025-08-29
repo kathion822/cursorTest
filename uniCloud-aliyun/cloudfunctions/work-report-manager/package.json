@@ -1,0 +1,11 @@
+{
+	"name": "work-report-manager",
+	"version": "1.0.0",
+	"description": "工作报告管理云对象",
+	"main": "index.obj.js",
+	"dependencies": {},
+	"cloudfunction-config": {
+		"triggers": [],
+		"path": "/work-report-manager"
+	}
+}

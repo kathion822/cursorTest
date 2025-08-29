@@ -521,6 +521,7 @@ export default {
 					// 保存登录信息
 					uni.setStorageSync('userInfo', result.result.userInfo);
 					uni.setStorageSync('token', result.result.token);
+					uni.setStorageSync('uid', result.result.userInfo.uid); // 存储uni-id的uid
 					uni.setStorageSync('loginType', loginType);
 					
 					console.log('登录信息已保存到本地存储');

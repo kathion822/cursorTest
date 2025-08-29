@@ -99,20 +99,34 @@ exports.main = async function(event, context) {
 		
 		console.log('清理后的用户信息:', cleanUserInfo);
 		
-		// 暂时跳过数据库操作，直接返回成功
-		console.log('跳过数据库操作，直接返回成功');
+		// 简化版本：直接生成用户ID和token
+		console.log('开始生成用户ID和token');
 		
-		// 生成token
-		const token = generateToken(userId);
+		// 生成唯一的用户ID
+		const uid = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+		
+		// 生成简单的token（实际应用中应该更安全）
+		const token = crypto.createHash('md5').update(uid + Date.now()).digest('hex');
+		
+		// 保存用户信息到数据库
+		await saveUserToDatabase({
+			...cleanUserInfo,
+			uid: uid,
+			userId: uid // 保持兼容性
+		});
 		
 		console.log('=== 统一登录云函数执行成功 ===');
-		console.log('用户信息:', cleanUserInfo);
+		console.log('生成的用户ID:', uid);
 		console.log('生成的token:', token);
 		
 		return {
 			code: 0,
-			message: userInfo.isNewUser ? '注册并登录成功' : '登录成功',
-			userInfo: cleanUserInfo,
+			message: '登录成功',
+			userInfo: {
+				...cleanUserInfo,
+				uid: uid,
+				userId: uid
+			},
 			token: token
 		};
 		
@@ -286,17 +300,17 @@ async function saveUserToDatabase(userInfo) {
 	try {
 		const userCollection = db.collection('users');
 		
-		// 确保userId存在
-		if (!userInfo.userId) {
-			console.error('用户ID不存在，无法保存');
-			throw new Error('用户ID不存在');
+		// 确保uid存在
+		if (!userInfo.uid) {
+			console.error('uid不存在，无法保存');
+			throw new Error('uid不存在');
 		}
 		
-		console.log('准备查询用户，userId:', userInfo.userId);
+		console.log('准备查询用户，uid:', userInfo.uid);
 		
-		// 检查用户是否已存在
+		// 检查用户是否已存在（使用uid查询）
 		const existingUser = await userCollection.where({
-			userId: userInfo.userId
+			uid: userInfo.uid
 		}).get();
 		
 		console.log('查询现有用户结果:', existingUser);
@@ -305,7 +319,7 @@ async function saveUserToDatabase(userInfo) {
 			// 更新现有用户
 			console.log('更新现有用户');
 			const updateResult = await userCollection.where({
-				userId: userInfo.userId
+				uid: userInfo.uid
 			}).update({
 				...userInfo,
 				updateTime: new Date()
@@ -343,10 +357,4 @@ async function saveUserToDatabase(userInfo) {
 	}
 }
 
-// 生成token
-function generateToken(userId) {
-	const timestamp = Date.now();
-	const random = Math.random().toString(36).substring(2, 11);
-	const token = crypto.createHash('md5').update(`${userId}_${timestamp}_${random}`).digest('hex');
-	return token;
-}
+
