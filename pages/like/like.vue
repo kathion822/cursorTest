@@ -923,6 +923,16 @@ export default {
 				}
 				
 				// 调用云函数提交报告
+				console.log('准备调用云函数，参数:', {
+					method: 'addWorkReport',
+					token: token,
+					title: this.reportForm.title,
+					content: this.reportForm.content,
+					plan: this.reportForm.plan,
+					problems: this.reportForm.problems,
+					date: this.reportForm.date
+				});
+				
 				const result = await uniCloud.callFunction({
 					name: 'work-report-manager-func',
 					data: {
@@ -935,6 +945,8 @@ export default {
 						date: this.reportForm.date
 					}
 				});
+				
+				console.log('云函数调用完成，原始结果:', result);
 				
 				uni.hideLoading();
 				
@@ -1007,16 +1019,20 @@ export default {
 				
 				uni.hideLoading();
 				
-				if (result.code === 0) {
+				// 云函数返回的结果在 result.result 中
+				const response = result.result;
+				console.log('云函数返回结果:', response);
+				
+				if (response && response.code === 0) {
 					// 加载成功
-					this.reportList = result.data.list || [];
+					this.reportList = response.data.list || [];
 					console.log('从云数据库加载报告:', this.reportList.length);
 				} else {
 					// 加载失败
-					console.warn('加载报告列表失败:', result.message);
+					console.warn('加载报告列表失败:', response ? response.message : '未知错误');
 					this.reportList = [];
 					uni.showToast({
-						title: result.message || '加载失败',
+						title: (response && response.message) || '加载失败',
 						icon: 'none'
 					});
 				}

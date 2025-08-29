@@ -412,6 +412,15 @@ const _sfc_main = {
           });
           return;
         }
+        common_vendor.index.__f__("log", "at pages/like/like.vue:926", "准备调用云函数，参数:", {
+          method: "addWorkReport",
+          token,
+          title: this.reportForm.title,
+          content: this.reportForm.content,
+          plan: this.reportForm.plan,
+          problems: this.reportForm.problems,
+          date: this.reportForm.date
+        });
         const result = await common_vendor.tr.callFunction({
           name: "work-report-manager-func",
           data: {
@@ -424,9 +433,10 @@ const _sfc_main = {
             date: this.reportForm.date
           }
         });
+        common_vendor.index.__f__("log", "at pages/like/like.vue:949", "云函数调用完成，原始结果:", result);
         common_vendor.index.hideLoading();
         const response = result.result;
-        common_vendor.index.__f__("log", "at pages/like/like.vue:943", "云函数返回结果:", response);
+        common_vendor.index.__f__("log", "at pages/like/like.vue:955", "云函数返回结果:", response);
         if (response && response.code === 0) {
           common_vendor.index.showToast({
             title: "报告提交成功",
@@ -443,7 +453,7 @@ const _sfc_main = {
         }
       } catch (error) {
         common_vendor.index.hideLoading();
-        common_vendor.index.__f__("error", "at pages/like/like.vue:968", "提交报告失败:", error);
+        common_vendor.index.__f__("error", "at pages/like/like.vue:980", "提交报告失败:", error);
         common_vendor.index.showToast({
           title: "提交失败，请重试",
           icon: "none"
@@ -458,10 +468,10 @@ const _sfc_main = {
         });
         const token = common_vendor.index.getStorageSync("token");
         const uid = common_vendor.index.getStorageSync("uid");
-        common_vendor.index.__f__("log", "at pages/like/like.vue:987", "加载报告列表 - 获取到的token:", token, "uid:", uid);
+        common_vendor.index.__f__("log", "at pages/like/like.vue:999", "加载报告列表 - 获取到的token:", token, "uid:", uid);
         if (!token || !uid) {
           common_vendor.index.hideLoading();
-          common_vendor.index.__f__("log", "at pages/like/like.vue:991", "加载报告列表 - token或uid为空，清空列表");
+          common_vendor.index.__f__("log", "at pages/like/like.vue:1003", "加载报告列表 - token或uid为空，清空列表");
           this.reportList = [];
           return;
         }
@@ -475,20 +485,22 @@ const _sfc_main = {
           }
         });
         common_vendor.index.hideLoading();
-        if (result.code === 0) {
-          this.reportList = result.data.list || [];
-          common_vendor.index.__f__("log", "at pages/like/like.vue:1013", "从云数据库加载报告:", this.reportList.length);
+        const response = result.result;
+        common_vendor.index.__f__("log", "at pages/like/like.vue:1024", "云函数返回结果:", response);
+        if (response && response.code === 0) {
+          this.reportList = response.data.list || [];
+          common_vendor.index.__f__("log", "at pages/like/like.vue:1029", "从云数据库加载报告:", this.reportList.length);
         } else {
-          common_vendor.index.__f__("warn", "at pages/like/like.vue:1016", "加载报告列表失败:", result.message);
+          common_vendor.index.__f__("warn", "at pages/like/like.vue:1032", "加载报告列表失败:", response ? response.message : "未知错误");
           this.reportList = [];
           common_vendor.index.showToast({
-            title: result.message || "加载失败",
+            title: response && response.message || "加载失败",
             icon: "none"
           });
         }
       } catch (error) {
         common_vendor.index.hideLoading();
-        common_vendor.index.__f__("error", "at pages/like/like.vue:1025", "加载报告列表失败:", error);
+        common_vendor.index.__f__("error", "at pages/like/like.vue:1041", "加载报告列表失败:", error);
         this.reportList = [];
         common_vendor.index.showToast({
           title: "加载失败，请重试",
@@ -501,9 +513,9 @@ const _sfc_main = {
       const token = common_vendor.index.getStorageSync("token");
       const userInfo = common_vendor.index.getStorageSync("userInfo");
       const uid = common_vendor.index.getStorageSync("uid");
-      common_vendor.index.__f__("log", "at pages/like/like.vue:1041", "检查登录状态:", { token: !!token, userInfo: !!userInfo, uid: !!uid });
+      common_vendor.index.__f__("log", "at pages/like/like.vue:1057", "检查登录状态:", { token: !!token, userInfo: !!userInfo, uid: !!uid });
       if (token && this.isTokenExpired(token)) {
-        common_vendor.index.__f__("log", "at pages/like/like.vue:1045", "token已过期，清除登录信息");
+        common_vendor.index.__f__("log", "at pages/like/like.vue:1061", "token已过期，清除登录信息");
         this.clearLoginInfo();
         return { isLoggedIn: false, token: null, userInfo: null, uid: null };
       }
@@ -514,7 +526,7 @@ const _sfc_main = {
       try {
         return !token || token.length < 10;
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/like/like.vue:1060", "检查token过期失败:", error);
+        common_vendor.index.__f__("error", "at pages/like/like.vue:1076", "检查token过期失败:", error);
         return true;
       }
     },
@@ -524,7 +536,7 @@ const _sfc_main = {
       common_vendor.index.removeStorageSync("userInfo");
       common_vendor.index.removeStorageSync("uid");
       common_vendor.index.removeStorageSync("loginType");
-      common_vendor.index.__f__("log", "at pages/like/like.vue:1071", "登录信息已清除");
+      common_vendor.index.__f__("log", "at pages/like/like.vue:1087", "登录信息已清除");
     },
     // 重置表单
     resetForm() {
