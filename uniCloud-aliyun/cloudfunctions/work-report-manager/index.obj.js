@@ -46,8 +46,8 @@ module.exports = {
 				plan: reportData.plan || '',
 				problems: reportData.problems || '',
 				status: 'pending', // 默认状态为待审批
-				createTime: new Date().toISOString(),
-				updateTime: new Date().toISOString()
+							createTime: new Date(),
+			updateTime: new Date()
 			}
 
 			// 插入数据库
@@ -129,7 +129,7 @@ module.exports = {
 			// 更新报告状态
 			const updateData = {
 				status: status,
-				updateTime: new Date().toISOString()
+				updateTime: new Date()
 			}
 
 			// 如果有领导批语，添加到更新数据中

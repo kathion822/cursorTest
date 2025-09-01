@@ -43,8 +43,8 @@ exports.main = async function(event, context) {
 			role: 'admin',
 			nickname: '超级管理员',
 			status: 1,
-			createTime: new Date().toISOString(),
-			updateTime: new Date().toISOString()
+			createTime: new Date(),
+			updateTime: new Date()
 		};
 		
 		// 保存到数据库

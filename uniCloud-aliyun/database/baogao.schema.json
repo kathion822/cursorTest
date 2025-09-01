@@ -12,9 +12,9 @@
 			"description": "ID，系统自动生成"
 		},
 		"uid": {
-				"bsonType": "string",
-	"description": "uni-id用户唯一标识符，关联用户表",
-	"title": "uni-id用户ID"
+			"bsonType": "string",
+			"description": "uni-id用户唯一标识符，关联用户表",
+			"title": "uni-id用户ID"
 		},
 		"title": {
 			"bsonType": "string",
@@ -53,61 +53,3 @@
 			"enum": ["draft", "pending", "approved", "rejected"]
 		},
 		"leaderComment": {
-			"bsonType": "string",
-			"description": "领导批语",
-			"title": "领导批语",
-			"maxLength": 500
-		},
-		"createTime": {
-			"bsonType": "date",
-			"description": "创建时间",
-			"title": "创建时间"
-		},
-		"updateTime": {
-			"bsonType": "date",
-			"description": "更新时间",
-			"title": "更新时间"
-		}
-	},
-	"indexes": [
-		{
-			"IndexName": "uid_status_index",
-			"MgoKeySchema": {
-				"MgoIndexKeys": [{
-					"Name": "uid",
-					"Direction": "1"
-				}, {
-					"Name": "status",
-					"Direction": "1"
-				}],
-				"MgoIsUnique": false
-			}
-		},
-		{
-			"IndexName": "uid_date_index",
-			"MgoKeySchema": {
-				"MgoIndexKeys": [{
-					"Name": "uid",
-					"Direction": "1"
-				}, {
-					"Name": "date",
-					"Direction": "-1"
-				}],
-				"MgoIsUnique": false
-			}
-		},
-		{
-			"IndexName": "uid_createTime_index",
-			"MgoKeySchema": {
-				"MgoIndexKeys": [{
-					"Name": "uid",
-					"Direction": "1"
-				}, {
-					"Name": "createTime",
-					"Direction": "-1"
-				}],
-				"MgoIsUnique": false
-			}
-		}
-	]
-}
