@@ -8,28 +8,32 @@
 	"autoSetInviteCode": false,
 	"forceInviteCode": false,
 	"app": {
-		"tokenExpiresIn": 2592000,
-		"oauth": {
-			"weixin": {
-				"appid": "your-wechat-appid",
-				"appsecret": "your-wechat-appsecret"
-			}
-		}
+		"tokenExpiresIn": 2592000
 	},
 	"mp-weixin": {
 		"oauth": {
 			"weixin": {
-				"appid": "your-wechat-appid",
-				"appsecret": "your-wechat-appsecret"
+				"appid": "",
+				"appsecret": ""
 			}
 		}
 	},
 	"service": {
 		"sms": {
-			"name": "your-sms-service",
+			"name": "",
 			"codeExpiresIn": 180,
-			"smsKey": "your-sms-key",
-			"smsSecret": "your-sms-secret"
+			"smsKey": "",
+			"smsSecret": ""
 		}
+	},
+	"uni-id": {
+		"passwordSecret": "passwordSecret-demo",
+		"tokenSecret": "tokenSecret-demo",
+		"tokenExpiresIn": 7200,
+		"tokenExpiresThreshold": 600,
+		"passwordErrorLimit": 6,
+		"passwordErrorRetryTime": 3600,
+		"autoSetInviteCode": false,
+		"forceInviteCode": false
 	}
 }
